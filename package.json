@@ -1,0 +1,36 @@
+{
+  "name": "Gobang",
+  "description": "",
+  "version": "1.0.0",
+  "author": "frank",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "doc": "typedoc --out docs /src -module commonjs -target ES5 -exclude /src/component"
+  },
+  "dependencies": {
+    "@types/echarts": "0.0.6",
+    "@types/lodash": "^4.14.52",
+    "@types/requirejs": "^2.0.0",
+    "angular2-uuid": "^1.1.1",
+    "iview": "^2.0.0-rc.17",
+    "postcss-loader": "^2.0.5",
+    "vue": "^2.3.3",
+    "vue-router": "^2.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "html-loader": "^0.4.3",
+    "node-sass": "^4.5.3",
+    "postcss-loader": "^2.0.5",
+    "sass-loader": "^6.0.5",
+    "style-loader": "^0.13.2",
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.0.0",
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.2.0"
+  }
+}
