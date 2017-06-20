@@ -180,8 +180,6 @@ export module GobangModule{
      */
     drawPiece(element: Piece);
 
-    computerGo();
-
   }
 
   export class GobangImpl implements Gobang{
@@ -210,9 +208,6 @@ export module GobangModule{
       this.content2D.fill();
     }
 
-    computerGo(){
 
-
-    }
   }
 }

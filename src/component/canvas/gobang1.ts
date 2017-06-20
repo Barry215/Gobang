@@ -109,18 +109,18 @@ export default Vue.extend({
                     } else if (t.manWins[k] == 2) {
                       manScore[i][j] += 400;
                     } else if (t.manWins[k] == 3) {
-                      manScore[i][j] += 2000;
+                      manScore[i][j] += 1000;
                     } else if (t.manWins[k] == 4) {
                       manScore[i][j] += 10000;
                     }
                     if (t.computerWins[k] == 1) {
-                      computerScore[i][j] += 220;
+                      computerScore[i][j] += 210;
                     } else if (t.computerWins[k] == 2) {
                       computerScore[i][j] += 420;
                     } else if (t.computerWins[k] == 3) {
-                      computerScore[i][j] += 2100;
+                      computerScore[i][j] += 1100;
                     } else if (t.computerWins[k] == 4) {
-                      computerScore[i][j] += 20000;
+                      computerScore[i][j] += 11000;
                     }
                   }
                 }
