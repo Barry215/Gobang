@@ -1,0 +1,20 @@
+<div>
+  <Modal
+    v-model="modal_show"
+    title="请选择"
+    @on-ok="确定">
+    <p>对话框内容</p>
+    <p>对话框内容</p>
+    <p>对话框内容</p>
+  </Modal>
+
+  <Card>
+    <div id="chess">
+      <canvas id="canvas">
+        您的浏览器不支持canvas动画效果
+      </canvas>
+    </div>
+  </Card>
+  <Button id="btn_start" type="primary" @click="modal_show = true" disabled="btn_show">开始</Button>
+
+</div>

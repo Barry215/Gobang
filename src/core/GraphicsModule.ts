@@ -90,7 +90,7 @@ export module GraphicsModule {
      */
     resize(height: number, width: number) {
       this.canvas.setAttribute('width', String(width));
-      this.canvas.setAttribute('height', String(height))
+      this.canvas.setAttribute('height', String(height));
     }
 
     /**
