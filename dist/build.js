@@ -10506,6 +10506,7 @@ var ChessBoardModule;
                 if (t.chessAIImpl1.isManWin()) {
                     that.handleGameOver(t);
                     window.alert("恭喜您打败了阿尔法狗!");
+                    return;
                 }
                 let coordinate = t.chessAIImpl1.computerStep(t.chessBoard);
                 that.drawChessPiece(new Piece(coordinate, !t.isBlack));
@@ -40847,28 +40848,28 @@ var ChessAIModule;
                         for (let k = 0; k < this.counts; k++) {
                             if (this.wins[i][j][k] == 1) {
                                 if (this.manWins[k] == 1) {
-                                    manScore[i][j] += 200;
+                                    manScore[i][j] += 100;
                                 }
                                 else if (this.manWins[k] == 2) {
-                                    manScore[i][j] += 400;
+                                    manScore[i][j] += 500;
                                 }
                                 else if (this.manWins[k] == 3) {
-                                    manScore[i][j] += 1000;
+                                    manScore[i][j] += 2000;
                                 }
                                 else if (this.manWins[k] == 4) {
                                     manScore[i][j] += 10000;
                                 }
                                 if (this.computerWins[k] == 1) {
-                                    computerScore[i][j] += 210;
+                                    computerScore[i][j] += 300;
                                 }
                                 else if (this.computerWins[k] == 2) {
-                                    computerScore[i][j] += 420;
+                                    computerScore[i][j] += 1000;
                                 }
                                 else if (this.computerWins[k] == 3) {
-                                    computerScore[i][j] += 1100;
+                                    computerScore[i][j] += 3000;
                                 }
                                 else if (this.computerWins[k] == 4) {
-                                    computerScore[i][j] += 11000;
+                                    computerScore[i][j] += 30000;
                                 }
                             }
                         }
