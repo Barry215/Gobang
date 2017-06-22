@@ -10496,11 +10496,12 @@ var ChessBoardModule;
                 const i = Math.floor(x / 30);
                 const j = Math.floor(y / 30);
                 //判断是否已有子
-                if (t.chessBoard[i][j] == 0) {
-                    that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
-                    t.yourTurn = false;
-                    t.chessBoard[i][j] = 1;
+                if (t.chessBoard[i][j] != 0) {
+                    return;
                 }
+                that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
+                t.yourTurn = false;
+                t.chessBoard[i][j] = 1;
                 t.chessAIImpl1.handleManStep(i, j);
                 if (t.chessAIImpl1.isManWin()) {
                     that.handleGameOver(t);
@@ -40251,7 +40252,7 @@ module.exports = "<div> <card> <div id=chess> <canvas id=canvas> 您的浏览器
 /* 20 */
 /***/ (function(module, exports) {
 
-module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:30px>玩家先下</span> <i-switch v-model=isFirst @on-change=changeFirst></i-switch> <span style=margin-left:30px>执黑棋</span> <i-switch v-model=isBlack @on-change=changeBlack></i-switch> </modal> <card> <div id=chess> <button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</button> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </card> </div> ";
+module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:30px>玩家先下</span> <i-switch v-model=isFirst @on-change=changeFirst></i-switch> <span style=margin-left:30px>执黑棋</span> <i-switch v-model=isBlack @on-change=changeBlack></i-switch> </modal> <card> <div id=chess> <i-button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</i-button> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </card> </div> ";
 
 /***/ }),
 /* 21 */

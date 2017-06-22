@@ -163,11 +163,13 @@ export module ChessBoardModule {
         const j = Math.floor(y / 30);
 
         //判断是否已有子
-        if (t.chessBoard[i][j] == 0) {
-          that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
-          t.yourTurn = false;
-          t.chessBoard[i][j] = 1;
+        if (t.chessBoard[i][j] != 0) {
+          return;
         }
+
+        that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
+        t.yourTurn = false;
+        t.chessBoard[i][j] = 1;
 
         t.chessAIImpl1.handleManStep(i,j);
         if (t.chessAIImpl1.isManWin()){
