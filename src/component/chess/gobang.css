@@ -1,5 +1,5 @@
 #chess {
-
+  text-align: center;
 }
 
 #canvas {
@@ -11,5 +11,8 @@
 }
 
 #btn_start {
-  margin: 15px auto;
+  width: 100px;
+  /*这种居中方式已经过时了*/
+  /*margin: 10px auto;*/
+
 }

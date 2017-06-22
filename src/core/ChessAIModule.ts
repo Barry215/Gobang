@@ -9,14 +9,24 @@ export module ChessAIModule {
    */
   export interface ChessAI{
     /**
-     * 判断是否游戏结束
+     * 判断是否玩家获胜
      */
-    isGameOver();
+    isManWin():boolean;
+
+    /**
+     * 判断是否电脑获胜
+     */
+    isComputerWin():boolean;
+
+    /**
+     * 处理玩家落子结果
+     */
+    handleManStep(x: number,y: number);
 
     /**
      * 计算机落子位置
      */
-    computerStep():Coordinate;
+    computerStep(chessBoard: number[][]):Coordinate;
 
   }
 
@@ -33,21 +43,7 @@ export module ChessAIModule {
 
     computerWins: number[] = [];
 
-    manScore : number[][] = [];
-
-    computerScore : number[][] = [];
-
     constructor(){
-      //初始化分数数组
-      for (let i = 0; i < 15; i++) {
-        this.manScore[i] = [];
-        this.computerScore[i] = [];
-        for (let j = 0; j < 15; j++) {
-          this.manScore[i][j] = 0;
-          this.computerScore[i][j] = 0;
-        }
-      }
-
       //初始化赢法数组
       for (let i = 0; i < 15; i++) {
         this.wins[i] = [];
@@ -103,16 +99,127 @@ export module ChessAIModule {
       }
     }
 
-
-    isGameOver() {
-
+    handleManStep(x: number, y: number) {
+      for (let k = 0; k < this.counts; k++) {
+        if (this.wins[x][y][k] == 1) {
+          this.manWins[k]++;
+          this.computerWins[k] = 6;
+        }
+      }
     }
 
-    computerStep(): Coordinate {
-      return new Coordinate(0,0);
+    computerStep(chessBoard:number[][]): Coordinate {
+      let u = 0;                // 电脑预落子的x位置
+      let v = 0;                // 电脑预落子的y位置
+      let max = 0;              // 最优位置的分数
+      let manScore = [];
+      let computerScore = [];
+
+      //初始化分数数组
+      for (let i = 0; i < 15; i++) {
+        manScore[i] = [];
+        computerScore[i] = [];
+        for (let j = 0; j < 15; j++) {
+          manScore[i][j] = 0;
+          computerScore[i][j] = 0;
+        }
+      }
+
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 15; j++) {
+          if (chessBoard[i][j] == 0) {
+            for (let k = 0; k < this.counts; k++) {
+              if (this.wins[i][j][k] == 1) {
+                if (this.manWins[k] == 1) {
+                  manScore[i][j] += 200;
+                } else if (this.manWins[k] == 2) {
+                  manScore[i][j] += 400;
+                } else if (this.manWins[k] == 3) {
+                  manScore[i][j] += 1000;
+                } else if (this.manWins[k] == 4) {
+                  manScore[i][j] += 10000;
+                }
+                if (this.computerWins[k] == 1) {
+                  computerScore[i][j] += 210;
+                } else if (this.computerWins[k] == 2) {
+                  computerScore[i][j] += 420;
+                } else if (this.computerWins[k] == 3) {
+                  computerScore[i][j] += 1100;
+                } else if (this.computerWins[k] == 4) {
+                  computerScore[i][j] += 11000;
+                }
+              }
+            }
+
+            // 如果玩家(i,j)处比目前最优的分数大，则落子在(i,j)处
+            if (manScore[i][j] > max) {
+              max = manScore[i][j];
+              u = i;
+              v = j;
+            } else if (manScore[i][j] == max) {
+              // 如果玩家(i,j)处和目前最优分数一样大，则比较电脑在该位置和预落子的位置的分数
+              if (computerScore[i][j] > computerScore[u][v]) {
+                u = i;
+                v = j;
+              }
+            }
+
+            // 如果电脑(i,j)处比目前最优的分数大，则落子在(i,j)处
+            if (computerScore[i][j] > max) {
+              max  = computerScore[i][j];
+              u = i;
+              v = j;
+            } else if (computerScore[i][j] == max) {
+              // 如果电脑(i,j)处和目前最优分数一样大，则比较玩家在该位置和预落子的位置的分数
+              if (manScore[i][j] > manScore[u][v]) {
+                u = i;
+                v = j;
+              }
+            }
+          }
+        }
+      }
+
+      for (let k = 0; k < this.counts; k++) {
+        if (this.wins[u][v][k] == 1) {
+          this.computerWins[k] ++;
+          this.manWins[k] = 6;
+        }
+      }
+
+      return new Coordinate(u,v);
+    }
+
+    isManWin():boolean {
+      for (let k = 0; k < this.counts; k++) {
+        if (this.manWins[k] == 5){
+          this.cleanWins();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    isComputerWin():boolean {
+      for (let k = 0; k < this.counts; k++) {
+        if (this.computerWins[k] == 5){
+          this.cleanWins();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * 重置赢法数组
+     */
+    cleanWins() {
+      for (let i = 0; i < this.counts; i++) {
+        this.manWins[i] = 0;
+        this.computerWins[i] = 0;
+      }
     }
 
   }
-
 
 }

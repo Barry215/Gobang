@@ -9,13 +9,13 @@ import 'iview/dist/styles/iview.css';
 Vue.use(iView);
 Vue.use(VueRouter);
 
+
 const router = new VueRouter({
   routes: routes
 });
 
 const app = new Vue({
   router: router,
-  store : store,
   render: h => h(App)
 }).$mount('#app');
 

@@ -1,20 +1,18 @@
 <div>
-  <Modal
-    v-model="modal_show"
-    title="请选择"
-    @on-ok="确定">
-    <p>对话框内容</p>
-    <p>对话框内容</p>
-    <p>对话框内容</p>
+  <Modal v-model="modal_show" title="请选择" @on-ok="ok">
+    <span style="margin-left: 30px">玩家先下</span>
+    <i-switch v-model="isFirst" @on-change="changeFirst"></i-switch>
+    <span style="margin-left: 30px">执黑棋</span>
+    <i-switch v-model="isBlack" @on-change="changeBlack"></i-switch>
   </Modal>
 
   <Card>
     <div id="chess">
+      <Button id="btn_start" type="primary" :disabled="btn_able" @click="modal_show = true">{{button_text}}</Button>
       <canvas id="canvas">
         您的浏览器不支持canvas动画效果
       </canvas>
     </div>
   </Card>
-  <Button id="btn_start" type="primary" @click="modal_show = true" disabled="btn_show">开始</Button>
 
 </div>

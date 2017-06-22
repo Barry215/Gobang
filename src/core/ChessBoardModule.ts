@@ -1,7 +1,9 @@
+import {ChessAIModule} from "./ChessAIModule";
 /**
  * Created by frank on 17/6/20.
  */
 export module ChessBoardModule {
+  import ChessAIImpl1 = ChessAIModule.ChessAIImpl1;
   /**
    * 五子棋坐标
    */
@@ -86,20 +88,9 @@ export module ChessBoardModule {
 
     context2D : CanvasRenderingContext2D;
 
-    gameOver : boolean = false;
-
-    isBlack : boolean = true;
-
-    yourTurn : boolean = true;
-
-    isFirst : boolean = true;
-
-    chessBoard : number[][] = [];
-
     constructor(canvas: HTMLCanvasElement) {
       this.canvas = canvas;
       this.context2D = this.canvas.getContext('2d');
-      // this.initBoard();
     }
 
     /**
@@ -124,24 +115,18 @@ export module ChessBoardModule {
     }
 
     /**
-     * 初始化棋局
+     * 设置canvas大小
+     * @param height
+     * @param width
      */
-    startChess(isBlack:boolean, isFirst:boolean){
-      this.gameOver = false;
-      this.isFirst = isFirst;
-      this.yourTurn = isFirst;
-      this.isBlack = isBlack;
-
-      for (let i = 0; i < 15; i++) {
-        this.chessBoard[i] = [];
-        for (let j = 0; j < 15; j++) {
-          this.chessBoard[i][j] = 0;
-        }
-      }
+    resize(height: number, width: number) {
+      this.canvas.setAttribute('width', String(width));
+      this.canvas.setAttribute('height', String(height));
     }
 
     /**
      * 落子
+     * @param element
      */
     drawChessPiece(element: Piece){
       this.context2D.beginPath();
@@ -160,12 +145,16 @@ export module ChessBoardModule {
 
     /**
      * 初始化点击事件
+     * @param t
      */
-    initClick(){
+    initClick(t:any){
       let that = this;
       this.canvas.onclick = function (clickEvent){
+        if (t.gameOver) {
+          return;
+        }
 
-        if (!that.yourTurn){
+        if (!t.yourTurn){
             return;
         }
         const x = clickEvent.offsetX;
@@ -173,14 +162,65 @@ export module ChessBoardModule {
         const i = Math.floor(x / 30);
         const j = Math.floor(y / 30);
 
-        //落子
-        that.drawChessPiece(new Piece(new Coordinate(i, j), that.isBlack));
-        that.yourTurn = false;
+        //判断是否已有子
+        if (t.chessBoard[i][j] == 0) {
+          that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
+          t.yourTurn = false;
+          t.chessBoard[i][j] = 1;
+        }
+
+        t.chessAIImpl1.handleManStep(i,j);
+        if (t.chessAIImpl1.isManWin()){
+          that.handleGameOver(t);
+          window.alert("恭喜您打败了阿尔法狗!");
+        }
+
+        let coordinate = t.chessAIImpl1.computerStep(t.chessBoard);
+        that.drawChessPiece(new Piece(coordinate, !t.isBlack));
+
+        t.chessBoard[coordinate.x][coordinate.y] = 2;
+        t.yourTurn = true;
+
+        if (t.chessAIImpl1.isComputerWin()){
+          that.handleGameOver(t);
+          window.alert("向人工智能低头吧!");
+        }
       }
     }
 
+    /**
+     * 电脑下第一步
+     * @param t
+     */
+    computerFirstStep(t:any){
+      this.drawChessPiece(new Piece(new Coordinate(7,7), !t.isBlack));
+
+      t.chessBoard[7][7] = 2;
+      t.yourTurn = true;
+    }
+
+    /**
+     * 游戏结束
+     * @param t
+     */
+    handleGameOver(t:any){
+      t.gameOver = true;
+      t.btn_able = false;
+      t.button_text = "再来一局";
+    }
+
+    gameAgain(t:any){
+      this.context2D.clearRect(0,0,450,450);
+      this.initBoard();
+      for (let i = 0; i < 15; i++) {
+        t.chessBoard[i] = [];
+        for (let j = 0; j < 15; j++) {
+          t.chessBoard[i][j] = 0;
+        }
+      }
+      t.gameOver = false;
+    }
+
   }
-
-
 
 }
