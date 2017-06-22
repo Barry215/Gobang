@@ -175,6 +175,7 @@ export module ChessBoardModule {
         if (t.chessAIImpl1.isManWin()){
           that.handleGameOver(t);
           window.alert("恭喜您打败了阿尔法狗!");
+          return;
         }
 
         let coordinate = t.chessAIImpl1.computerStep(t.chessBoard);
