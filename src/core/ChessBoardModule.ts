@@ -171,20 +171,20 @@ export module ChessBoardModule {
         t.yourTurn = false;
         t.chessBoard[i][j] = 1;
 
-        t.chessAIImpl1.handleManStep(i,j);
-        if (t.chessAIImpl1.isManWin()){
+        t.chessAIImpl.handleManStep(i,j);
+        if (t.chessAIImpl.isManWin()){
           that.handleGameOver(t);
           window.alert("恭喜您打败了阿尔法狗!");
           return;
         }
 
-        let coordinate = t.chessAIImpl1.computerStep(t.chessBoard);
+        let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
         that.drawChessPiece(new Piece(coordinate, !t.isBlack));
 
         t.chessBoard[coordinate.x][coordinate.y] = 2;
         t.yourTurn = true;
 
-        if (t.chessAIImpl1.isComputerWin()){
+        if (t.chessAIImpl.isComputerWin()){
           that.handleGameOver(t);
           window.alert("向人工智能低头吧!");
         }
@@ -207,6 +207,7 @@ export module ChessBoardModule {
      * @param t
      */
     handleGameOver(t:any){
+      t.chessAIImpl.cleanWins(t.chessAIImpl);
       t.gameOver = true;
       t.btn_able = false;
       t.button_text = "再来一局";

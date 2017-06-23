@@ -10502,17 +10502,17 @@ var ChessBoardModule;
                 that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
                 t.yourTurn = false;
                 t.chessBoard[i][j] = 1;
-                t.chessAIImpl1.handleManStep(i, j);
-                if (t.chessAIImpl1.isManWin()) {
+                t.chessAIImpl.handleManStep(i, j);
+                if (t.chessAIImpl.isManWin()) {
                     that.handleGameOver(t);
                     window.alert("恭喜您打败了阿尔法狗!");
                     return;
                 }
-                let coordinate = t.chessAIImpl1.computerStep(t.chessBoard);
+                let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
                 that.drawChessPiece(new Piece(coordinate, !t.isBlack));
                 t.chessBoard[coordinate.x][coordinate.y] = 2;
                 t.yourTurn = true;
-                if (t.chessAIImpl1.isComputerWin()) {
+                if (t.chessAIImpl.isComputerWin()) {
                     that.handleGameOver(t);
                     window.alert("向人工智能低头吧!");
                 }
@@ -10532,6 +10532,7 @@ var ChessBoardModule;
          * @param t
          */
         handleGameOver(t) {
+            t.chessAIImpl.cleanWins(t.chessAIImpl);
             t.gameOver = true;
             t.btn_able = false;
             t.button_text = "再来一局";
@@ -40580,7 +40581,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             }
             return chessBoard;
         },
-        chessAIImpl1: function () {
+        chessAIImpl: function () {
             return new ChessAIImpl1();
         }
     },
@@ -40913,7 +40914,6 @@ var ChessAIModule;
         isManWin() {
             for (let k = 0; k < this.counts; k++) {
                 if (this.manWins[k] == 5) {
-                    this.cleanWins();
                     return true;
                 }
             }
@@ -40922,7 +40922,6 @@ var ChessAIModule;
         isComputerWin() {
             for (let k = 0; k < this.counts; k++) {
                 if (this.computerWins[k] == 5) {
-                    this.cleanWins();
                     return true;
                 }
             }
@@ -40931,10 +40930,10 @@ var ChessAIModule;
         /**
          * 重置赢法数组
          */
-        cleanWins() {
+        cleanWins(chessAI) {
             for (let i = 0; i < this.counts; i++) {
-                this.manWins[i] = 0;
-                this.computerWins[i] = 0;
+                chessAI.manWins[i] = 0;
+                chessAI.computerWins[i] = 0;
             }
         }
     }

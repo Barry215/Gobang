@@ -33,7 +33,7 @@ export default Vue.extend({
       }
       return chessBoard;
     },
-    chessAIImpl1: function () {
+    chessAIImpl: function () {
       return new ChessAIImpl1();
     }
   },

@@ -28,6 +28,10 @@ export module ChessAIModule {
      */
     computerStep(chessBoard: number[][]):Coordinate;
 
+    /**
+     * 重置赢法数组
+     */
+    cleanWins(chessAI : ChessAI);
   }
 
   /**
@@ -193,7 +197,6 @@ export module ChessAIModule {
     isManWin():boolean {
       for (let k = 0; k < this.counts; k++) {
         if (this.manWins[k] == 5){
-          this.cleanWins();
           return true;
         }
       }
@@ -203,7 +206,6 @@ export module ChessAIModule {
     isComputerWin():boolean {
       for (let k = 0; k < this.counts; k++) {
         if (this.computerWins[k] == 5){
-          this.cleanWins();
           return true;
         }
       }
@@ -213,10 +215,10 @@ export module ChessAIModule {
     /**
      * 重置赢法数组
      */
-    cleanWins() {
+    cleanWins(chessAI : ChessAIImpl1) {
       for (let i = 0; i < this.counts; i++) {
-        this.manWins[i] = 0;
-        this.computerWins[i] = 0;
+        chessAI.manWins[i] = 0;
+        chessAI.computerWins[i] = 0;
       }
     }
 
