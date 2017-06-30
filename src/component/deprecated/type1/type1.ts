@@ -1,9 +1,9 @@
 import * as Vue from 'vue';
-import {NavigationModule} from "../../controller/NavigationModule";
+import {NavigationModule} from "../../../controller/NavigationModule";
 import Location = NavigationModule.Location;
-import {GraphicsModule} from "../../core/GraphicsModule";
+import {GraphicsModule} from "../../../core/deprecated/GraphicsModule";
 import GraphicsCanvasImpl = GraphicsModule.GraphicsCanvasImpl;
-import {GraphicsModelModule} from "../../core/GraphicsModelModule";
+import {GraphicsModelModule} from "../../../core/deprecated/GraphicsModelModule";
 import OneKey = GraphicsModelModule.OneKey;
 import Coordinate = GraphicsModelModule.Coordinate;
 import Circle = GraphicsModelModule.Circle;

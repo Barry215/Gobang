@@ -1,8 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>五子棋</title>
+  <style>
+    body {
+      /* 加载背景图 */
+      /* 背景图垂直、水平均居中 */
+      /* 背景图不平铺 */
+      /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+      /* 让背景图基于容器大小伸缩 */
+
+      /* 设置背景颜色，背景图加载过程中会显示背景色 */
+      background: #464646 url(./src/assets/gobang.png) no-repeat fixed center center;
+
+      background-size: cover;
+    }
+  </style>
 </head>
 <body>
 <div id="app"></div>

@@ -177,6 +177,7 @@ export module ChessBoardModule {
           window.alert("恭喜您打败了阿尔法狗!");
           return;
         }
+        
 
         let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
         that.drawChessPiece(new Piece(coordinate, !t.isBlack));

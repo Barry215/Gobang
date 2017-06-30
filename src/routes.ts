@@ -1,20 +1,21 @@
-import type1 from './component/type1/type1'
-import gobang1 from './component/canvas/gobang1'
+
 import gobang from './component/chess/gobang'
+import index from './component/index/index'
+import player from './component/player/player'
 
 const routes = [
   {
     path: '/',
-    component: gobang
+    component: index
   },
   {
     path: '/gobang',
-    component: gobang1
+    component: gobang
   },
   {
-    path: '/type1',
-    component: type1
-  },
+    path: '/player',
+    component: player
+  }
 ];
 
 export default routes;

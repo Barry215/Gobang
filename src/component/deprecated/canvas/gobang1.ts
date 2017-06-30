@@ -1,11 +1,11 @@
 import * as Vue from 'vue';
 import './gobang1.css'
-import {GraphicsModule} from "../../core/GraphicsModule";
+import {GraphicsModule} from "../../../core/deprecated/GraphicsModule";
 import GraphicsCanvasImpl = GraphicsModule.GraphicsCanvasImpl;
-import {GraphicsModelModule} from "../../core/GraphicsModelModule";
+import {GraphicsModelModule} from "../../../core/deprecated/GraphicsModelModule";
 import StraightLine = GraphicsModelModule.StraightLine;
 import Circle = GraphicsModelModule.Circle;
-import {GobangModule} from "../../core/GobangModule";
+import {GobangModule} from "../../../core/deprecated/GobangModule";
 import GobangImpl = GobangModule.GobangImpl;
 import Piece = GobangModule.Piece;
 import Coordinate = GobangModule.Coordinate;
