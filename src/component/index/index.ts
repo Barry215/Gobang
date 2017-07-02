@@ -8,9 +8,6 @@ export default Vue.extend({
 
     }
   },
-  computed : {
-
-  },
   methods: {
     routerGo1 () {
       this.$router.push('/gobang');
