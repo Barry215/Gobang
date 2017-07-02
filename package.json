@@ -13,9 +13,12 @@
     "@types/echarts": "0.0.6",
     "@types/lodash": "^4.14.52",
     "@types/requirejs": "^2.0.0",
+    "@types/socket.io-client": "^1.4.29",
     "angular2-uuid": "^1.1.1",
+    "express": "^4.15.3",
     "iview": "^2.0.0-rc.17",
     "postcss-loader": "^2.0.5",
+    "socket.io": "^2.0.3",
     "vue": "^2.3.3",
     "vue-router": "^2.0.0"
   },

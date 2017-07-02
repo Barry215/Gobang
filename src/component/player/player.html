@@ -2,18 +2,20 @@
   <Modal
     v-model="modal_show2"
     title="对战邀请"
-    @on-ok="接受"
-    @on-cancel="取消">
-    对战ID为 {{againstId}} 的用户挑战你
+    @on-ok="btn_ok"
+    @on-cancel="btn_cancel">
+    对战ID为 {{inviteId}} 的用户挑战你
   </Modal>
 
   <h3>您的对战ID：</h3> {{gameId}}
   <br>
-  <i-input v-model="againstId" placeholder="请输入对方的对战ID..." style="width: 300px"/>
+  <i-input v-model="againstId" placeholder="请输入对方的对战ID..." style="width: 300px"></i-input>
   <br>
   <i-button type="primary" :loading="loading" size="large" @click="inviteGame">
     <span v-if="!loading">邀请对决</span>
     <span v-else>等待对方接受...</span>
   </i-button>
+
+
 
 </div>
