@@ -8,10 +8,13 @@ export default Vue.extend({
   data(){
     return {
       gameId : "",
-      againstId : "",
+      againstName : "",
       inviteId : "",
+      nick : "",
+      onlineList : [],
       loading: false,
-      modal_show2 : false
+      modal_show2 : false,
+      modal_show3 : true
     }
   },
   computed : {
@@ -32,6 +35,22 @@ export default Vue.extend({
     btn_cancel () {
       let t: any = this;
       t.socket.emit('refuseGame', t.inviteId);
+    },
+    emitNick () {
+      let t: any = this;
+      if (t.nick != ""){
+        t.socket.emit('initNick', t.nick);
+      }else {
+        alert("昵称不能为空");
+      }
+    },
+    modifyNick () {
+      let t: any = this;
+      t.modal_show3 = true;
+    },
+    getOnlineList () {
+      let t: any = this;
+      t.socket.emit('getOnlineList');
     }
   },
   mounted(){
@@ -54,6 +73,21 @@ export default Vue.extend({
       }else {
           alert("对方并不想理你，并丢给你一条狗🐶")
       }
+    });
+
+    t.socket.on('initNickResult', function (result) {
+      if (result.status){
+        alert(result.msg);
+        t.modal_show3 = false;
+      }else {
+        t.nick = "";
+        alert(result.msg);
+      }
+    });
+
+    t.socket.on('refreshOnlineList', function (onlineList) {
+      console.log("onlineList:" + onlineList);
+      t.onlineList = JSON.parse(onlineList);
     });
 
     t.socket.on('news', function (data) {

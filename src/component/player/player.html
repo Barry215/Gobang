@@ -1,5 +1,15 @@
 <div id="div_player">
   <Modal
+    v-model="modal_show3"
+    :closable="false"
+    :mask-closable="false">
+    <i-input v-model="nick"  placeholder="请输入您的昵称..."></i-input>
+    <div slot="footer">
+      <i-button type="primary" size="large" long @click="emitNick">确定</i-button>
+    </div>
+  </Modal>
+
+  <Modal
     v-model="modal_show2"
     title="对战邀请"
     @on-ok="btn_ok"
@@ -7,11 +17,19 @@
     对战ID为 {{inviteId}} 的用户挑战你
   </Modal>
 
-  <h3>您的对战ID：</h3> {{gameId}}
-  <br>
-  <i-input v-model="againstId" placeholder="请输入对方的对战ID..." style="width: 300px"></i-input>
-  <br>
-  <i-button type="primary" :loading="loading" size="large" @click="inviteGame">
+  <h3>您的昵称为：{{nick}}</h3>
+  <i-button type="primary" @click="modifyNick">修改昵称</i-button>
+
+  <Select v-model="againstName" style="width: 200px" :filterable="true" @click="getOnlineList">
+    <Option v-for="item in onlineList" :value="item.socketId" :key="item" :disabled = "!item.gameState">
+      <span>{{ item.nick }}</span>
+      <span v-if = "item.gameState" style="float:right;color:#59cc6b">在线可撩</span>
+      <span v-else style="float:right;color:#cc4949">对局中</span>
+    </Option>
+  </Select>
+
+
+  <i-button type="primary" :loading="loading" @click="inviteGame">
     <span v-if="!loading">邀请对决</span>
     <span v-else>等待对方接受...</span>
   </i-button>
