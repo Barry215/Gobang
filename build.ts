@@ -1,9 +1,12 @@
 import * as Vue from 'vue'
 import * as VueRouter from 'vue-router'
+// import store from './src/store/store';
+
 import App from './src/app'
 import routes from './src/routes'
 import iView from 'iview';
-import store from './src/store/store';
+
+
 import 'iview/dist/styles/iview.css';
 
 Vue.use(iView);

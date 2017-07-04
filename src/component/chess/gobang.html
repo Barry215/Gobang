@@ -1,9 +1,9 @@
 <div>
   <Modal v-model="modal_show" title="请选择" @on-ok="ok">
     <span style="margin-left: 30px">玩家先下</span>
-    <i-switch v-model="isFirst" @on-change="changeFirst"></i-switch>
+    <i-switch v-model="isFirst"></i-switch>
     <span style="margin-left: 30px">执黑棋</span>
-    <i-switch v-model="isBlack" @on-change="changeBlack"></i-switch>
+    <i-switch v-model="isBlack"></i-switch>
   </Modal>
 
   <Card>

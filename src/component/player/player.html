@@ -14,26 +14,49 @@
     title="对战邀请"
     @on-ok="btn_ok"
     @on-cancel="btn_cancel">
-    对战ID为 {{inviteId}} 的用户挑战你
+    用户昵称为 {{inviteName}} 的用户想要挑战你！
   </Modal>
 
-  <h3>您的昵称为：{{nick}}</h3>
-  <i-button type="primary" @click="modifyNick">修改昵称</i-button>
+  <div style="margin-top:20px;">
+    <h3 style="display: inline;">您的昵称为：{{nick}}</h3>
+    <i-button type="ghost" style="margin-left: 8px;" @click="modifyNick">修改昵称</i-button>
+  </div>
 
-  <Select v-model="againstName" style="width: 200px" :filterable="true" @click="getOnlineList">
-    <Option v-for="item in onlineList" :value="item.socketId" :key="item" :disabled = "!item.gameState">
+
+  <Select v-model="againstId" style="width: 220px;margin-top:10px;" :filterable="true">
+    <Option v-for="item in onlineList" :value="item.socketId" :label="item.nick" :key="item" :disabled = "!item.gameState">
       <span>{{ item.nick }}</span>
       <span v-if = "item.gameState" style="float:right;color:#59cc6b">在线可撩</span>
       <span v-else style="float:right;color:#cc4949">对局中</span>
     </Option>
   </Select>
 
+  <h3>againstId: {{againstId}}</h3>
 
-  <i-button type="primary" :loading="loading" @click="inviteGame">
+  <i-button type="primary" :loading="loading" style="margin-top:7px;" @click="inviteGame">
     <span v-if="!loading">邀请对决</span>
     <span v-else>等待对方接受...</span>
   </i-button>
 
+
+  <div v-show="gameStart" style="margin-top:10px;text-align: center;">
+
+    <Modal v-model="modal_show4" title="请选择" @on-ok="btn_ok_startGame">
+      <span style="margin-left: 30px">对方先下</span>
+      <i-switch v-model="isAfter"></i-switch>
+    </Modal>
+
+    <i-button v-if="isInviteUser" type="primary" :disabled="btn_start_able" style="margin-top:7px;" @click="modal_show4 = true">
+      {{button_start}}
+    </i-button>
+
+    <Alert style="width: 200px;margin: 10px auto;" v-if="myTurn" >轮到您下棋...</Alert>
+    <Alert style="width: 200px;margin: 10px auto;" v-else >未轮到您下棋...</Alert>
+
+    <canvas id="canvasPlay">
+      您的浏览器不支持canvas动画效果
+    </canvas>
+  </div>
 
 
 </div>

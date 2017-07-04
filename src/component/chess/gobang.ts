@@ -9,7 +9,7 @@ export default Vue.extend({
   template: require('./gobang.html'),
   data(){
     return {
-      isBlack : true,
+      isBlack : false,
       isFirst : false,
       btn_able : false,
       yourTurn : false,
@@ -49,15 +49,16 @@ export default Vue.extend({
         t.chess.computerFirstStep(t);
       }
       t.chess.initClick(t);
-    },
-    changeFirst (status) {
-      let t: any = this;
-      t.isFirst = status;
-    },
-    changeBlack (status) {
-      let t: any = this;
-      t.isBlack = status;
     }
+    // ,
+    // changeFirst (status) {
+    //   let t: any = this;
+    //   t.isFirst = status;
+    // },
+    // changeBlack (status) {
+    //   let t: any = this;
+    //   t.isBlack = status;
+    // }
   },
   mounted(){
     let t: any = this;

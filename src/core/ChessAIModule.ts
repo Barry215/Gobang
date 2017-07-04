@@ -139,7 +139,7 @@ export module ChessAIModule {
                 } else if (this.manWins[k] == 2) {
                   manScore[i][j] += 500;
                 } else if (this.manWins[k] == 3) {
-                  manScore[i][j] += 2000;
+                  manScore[i][j] += 2500;
                 } else if (this.manWins[k] == 4) {
                   manScore[i][j] += 10000;
                 }
