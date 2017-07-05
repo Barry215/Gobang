@@ -33,7 +33,7 @@ export default Vue.extend({
   },
   computed : {
     socket : function () {
-      return io.connect('http://www.maijinta.cn:3001');
+      return io.connect('https://www.maijinta.cn:3001');
     },
     playChess: function () {
       let canvas = <HTMLCanvasElement>document.getElementById('canvasPlay');

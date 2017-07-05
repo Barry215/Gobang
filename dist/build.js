@@ -47816,7 +47816,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
     },
     computed: {
         socket: function () {
-            return __WEBPACK_IMPORTED_MODULE_1_socket_io_client__["connect"]('http://www.maijinta.cn:3001');
+            return __WEBPACK_IMPORTED_MODULE_1_socket_io_client__["connect"]('https://www.maijinta.cn:3001');
         },
         playChess: function () {
             let canvas = document.getElementById('canvasPlay');
