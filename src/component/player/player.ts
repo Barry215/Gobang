@@ -18,6 +18,7 @@ export default Vue.extend({
       modal_show2 : false,
       modal_show3 : true,
       modal_show4 : false,
+      modal_show5 : false,
       gameStart : false,
       isInviteUser : false,
       button_start : "开始",
@@ -25,7 +26,9 @@ export default Vue.extend({
       isAfter : true,
       myTurn : false,
       gameOver : false,
-      nextBlack : true
+      nextBlack : true,
+      turnMsgShow : false,
+      isGameWin : true
     }
   },
   computed : {
@@ -48,13 +51,21 @@ export default Vue.extend({
     }
   },
   methods: {
+    notice_success (msg) {
+      let t: any = this;
+      t.$Message.success(msg);
+    },
+    notice_warning (msg) {
+      let t: any = this;
+      t.$Message.warning(msg);
+    },
     inviteGame() {
       let t: any = this;
       if (t.againstId != ""){
         t.loading = true;
         t.socket.emit('inviteGame', t.againstId);
       }else {
-          alert("您还未选择挑战的人呢!");
+          t.notice_warning('您还未选择挑战的人呢！');
       }
 
     },
@@ -75,10 +86,10 @@ export default Vue.extend({
     },
     emitNick () {
       let t: any = this;
-      if (t.nick != ""){
+      if (t.nick.trim() != ""){
         t.socket.emit('initNick', t.nick);
       }else {
-        alert("昵称不能为空");
+        t.notice_warning('昵称不能为空');
       }
     },
     modifyNick () {
@@ -90,6 +101,7 @@ export default Vue.extend({
       t.btn_start_able = true;
       t.myTurn = !t.isAfter;
       t.nextBlack = !t.isAfter;
+      t.turnMsgShow = true;
       if (t.gameOver){
         t.playChess.gameAgain(t);
       }
@@ -122,10 +134,9 @@ export default Vue.extend({
         t.playChess.initBoard();
         t.playChess.initClick(t);
 
-
-        alert("对方接受了邀请！")
+        t.notice_success('对方接受了邀请！');
       }else {
-          alert("对方并不想理你，并丢给你一条狗🐶")
+        t.notice_warning('对方并不想理你，并丢给你一条狗🐶');
       }
     });
 
@@ -134,7 +145,7 @@ export default Vue.extend({
         t.modal_show3 = false;
       }else {
         t.nick = "";
-        alert("此昵称已经有人用了");
+        t.notice_warning('此昵称已经有人用了');
       }
     });
 
@@ -147,6 +158,7 @@ export default Vue.extend({
       t.isAfter = isAfter;
       t.myTurn = !isAfter;
       t.nextBlack = !isAfter;
+      t.turnMsgShow = true;
       if (t.gameOver){
         t.playChess.gameAgain(t);
       }

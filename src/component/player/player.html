@@ -23,7 +23,7 @@
   </div>
 
 
-  <Select v-model="againstId" style="width: 220px;margin-top:10px;" :filterable="true">
+  <Select v-model="againstId" style="width: 180px;margin-top:10px;" :filterable="true">
     <Option v-for="item in onlineList" :value="item.socketId" :label="item.nick" :key="item" :disabled = "!item.gameState">
       <span>{{ item.nick }}</span>
       <span v-if = "item.gameState" style="float:right;color:#59cc6b">在线可撩</span>
@@ -31,12 +31,23 @@
     </Option>
   </Select>
 
-  <h3>againstId: {{againstId}}</h3>
-
-  <i-button type="primary" :loading="loading" style="margin-top:7px;" @click="inviteGame">
+  <i-button type="primary" :loading="loading" style="margin-left:5px;margin-top:10px;" @click="inviteGame">
     <span v-if="!loading">邀请对决</span>
     <span v-else>等待对方接受...</span>
   </i-button>
+
+  <Modal
+    v-model="modal_show5"
+    :closable="false"
+    :mask-closable="false"
+    style = "text-align: center"
+    >
+    <p v-if="isGameWin" style="font-size: 18px">您成功打败了对手！</p>
+    <p v-if="!isGameWin" style="font-size: 18px">很可惜，您输了！</p>
+    <div slot="footer">
+      <i-button type="primary" size="large" long @click="modal_show5 = false">确定</i-button>
+    </div>
+  </Modal>
 
 
   <div v-show="gameStart" style="margin-top:10px;text-align: center;">
@@ -50,8 +61,11 @@
       {{button_start}}
     </i-button>
 
-    <Alert style="width: 200px;margin: 10px auto;" v-if="myTurn" >轮到您下棋...</Alert>
-    <Alert style="width: 200px;margin: 10px auto;" v-else >未轮到您下棋...</Alert>
+    <div v-show="turnMsgShow" style="margin: 10px auto;text-align: center;">
+      <Alert style="width: 200px;" v-if="myTurn" >轮到您下棋...</Alert>
+      <Alert style="width: 200px;" v-else >未轮到您下棋...</Alert>
+    </div>
+
 
     <canvas id="canvasPlay">
       您的浏览器不支持canvas动画效果

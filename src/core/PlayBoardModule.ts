@@ -107,7 +107,7 @@ export class PlayChess{
 
       that.drawChessPiece(new Piece(new Coordinate(i, j), t.nextBlack));
       t.myTurn = false;
-      if (t.isAfter){
+      if (!t.nextBlack){
         t.chessBoard[i][j] = 2;
       }else {
         t.chessBoard[i][j] = 1;
@@ -222,13 +222,16 @@ export class PlayChess{
 
       if (gameResult != 0){
         t.gameOver = true;
+        t.turnMsgShow = false;
         t.button_start = "再来一局";
         t.btn_start_able = false;
         if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter){
-          alert("您成功打败了对手！");
+          t.isGameWin = true;
         }else {
-          alert("很可惜，您失败了！");
+          t.isGameWin = false;
         }
+
+        t.modal_show5 = true;
       }
     }
 
