@@ -177,7 +177,7 @@ export module ChessBoardModule {
           window.alert("恭喜您打败了阿尔法狗!");
           return;
         }
-        
+
 
         let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
         that.drawChessPiece(new Piece(coordinate, !t.isBlack));
@@ -218,7 +218,6 @@ export module ChessBoardModule {
       this.context2D.clearRect(0,0,450,450);
       this.initBoard();
       for (let i = 0; i < 15; i++) {
-        t.chessBoard[i] = [];
         for (let j = 0; j < 15; j++) {
           t.chessBoard[i][j] = 0;
         }

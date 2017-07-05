@@ -90,6 +90,9 @@ export default Vue.extend({
       t.btn_start_able = true;
       t.myTurn = !t.isAfter;
       t.nextBlack = !t.isAfter;
+      if (t.gameOver){
+        t.playChess.gameAgain(t);
+      }
 
       t.socket.emit('gameTurn', {againstId : t.againstId,isAfter : t.isAfter});
     }
@@ -144,6 +147,10 @@ export default Vue.extend({
       t.isAfter = isAfter;
       t.myTurn = !isAfter;
       t.nextBlack = !isAfter;
+      if (t.gameOver){
+        t.playChess.gameAgain(t);
+      }
+
     });
 
     t.socket.on('pullChessBoard', function (data) {
@@ -151,7 +158,7 @@ export default Vue.extend({
       t.myTurn = true;
       t.nextBlack = data.nextBlack;
       t.playChess.drawAllChessPiece(t,newChessBoard);
-
+      t.playChess.handleGameOver(t);
     });
 
     t.socket.on('news', function (data) {

@@ -75,11 +75,10 @@ export class PlayChess{
       for (let j = 0; j < 15; j++) {
         if (t.chessBoard[i][j] == 0 && newChessBoard[i][j] != 0){
           this.drawChessPiece(new Piece(new Coordinate(i, j), newChessBoard[i][j] == 1));
+          t.chessBoard[i][j] = newChessBoard[i][j];
         }
       }
     }
-
-    t.chessBoard = newChessBoard;
   }
 
   /**
@@ -116,26 +115,129 @@ export class PlayChess{
 
       t.socket.emit('pushChessBoard', {againstId: t.againstId, chessBoard: JSON.stringify(t.chessBoard), nextBlack: !t.nextBlack});
 
+      that.handleGameOver(t);
     }
   }
 
 
+  /**
+   * 判断游戏是否结束
+   * @param t
+   * @returns {number} 0 游戏未结束 1 黑子赢 2 白子赢
+   */
+  isGameOver(t:any): number {
+    let count = 0;
+
+    // 纵向90°的五子判断
+    for (let i = 0; i < 15; i++) {
+      for (let j = 0; j < 11; j++) {
+        count = 0;
+        for (let k = 0; k < 5; k++) {
+          if (t.chessBoard[i][j + k] == 0){
+            count = 0;
+            break;
+          }else {
+            count += t.chessBoard[i][j + k];
+          }
+        }
+        if (count == 5){
+          return 1;
+        }else if (count == 10){
+          return 2;
+        }
+      }
+    }
+
+    // 横向0°的五子判断
+    for (let i = 0; i < 15; i++) {
+      for (let j = 0; j < 11; j++) {
+        count = 0;
+        for (let k = 0; k < 5; k++) {
+          if (t.chessBoard[j + k][i] == 0){
+            count = 0;
+            break;
+          }else {
+            count += t.chessBoard[j + k][i];
+          }
+        }
+        if (count == 5){
+          return 1;
+        }else if (count == 10){
+          return 2;
+        }
+      }
+    }
+
+    // 斜向135°的五子判断'\'方向
+    for (let i = 0; i < 11; i++) {
+      for (let j = 0; j < 11; j++) {
+        count = 0;
+        for (let k = 0; k < 5; k++) {
+          if (t.chessBoard[i + k][j + k] == 0){
+            count = 0;
+            break;
+          }else {
+            count += t.chessBoard[i + k][j + k];
+          }
+        }
+        if (count == 5){
+          return 1;
+        }else if (count == 10){
+          return 2;
+        }
+      }
+    }
+
+    // 斜向45°的五子判断'/'方向
+    for (let i = 0; i < 11; i++) {
+      for (let j = 14; j > 3; j--) {
+        count = 0;
+        for (let k = 0; k < 5; k++) {
+          if (t.chessBoard[i + k][j - k] == 0){
+            count = 0;
+            break;
+          }else {
+            count += t.chessBoard[i + k][j - k];
+          }
+        }
+        if (count == 5){
+          return 1;
+        }else if (count == 10){
+          return 2;
+        }
+      }
+    }
+
+    return 0;
+  }
 
   /**
-   * 游戏结束
+   * 处理游戏结束
    * @param t
    */
-  handleGameOver(t:any){
-    t.gameOver = true;
-    t.btn_start_able = false;
-    t.button_start = "再来一局";
+  handleGameOver(t:any) {
+    if (!t.gameOver){
+      let gameResult = this.isGameOver(t);
+      console.log("目前游戏进度："+ gameResult);
+
+      if (gameResult != 0){
+        t.gameOver = true;
+        t.button_start = "再来一局";
+        t.btn_start_able = false;
+        if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter){
+          alert("您成功打败了对手！");
+        }else {
+          alert("很可惜，您失败了！");
+        }
+      }
+    }
+
   }
 
   gameAgain(t:any){
     this.context2D.clearRect(0,0,450,450);
     this.initBoard();
     for (let i = 0; i < 15; i++) {
-      t.chessBoard[i] = [];
       for (let j = 0; j < 15; j++) {
         t.chessBoard[i][j] = 0;
       }
