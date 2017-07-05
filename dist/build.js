@@ -46217,7 +46217,7 @@ module.exports = "<div id=div_index> <i-button type=primary style=margin-bottom:
 /* 59 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <select v-model=againstId style=width:180px;margin-top:10px :filterable=true> <option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </option> </select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <div v-show=turnMsgShow style=\"margin:10px auto;text-align:center\"> <alert style=width:200px v-if=myTurn>轮到您下棋...</alert> <alert style=width:200px v-else>未轮到您下棋...</alert> </div> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> ";
+module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <div v-show=invite_able style=width:auto> <i-select v-model=challengeId style=width:180px;margin-top:10px :filterable=true> <i-option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </i-option> </i-select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> </div> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <div v-show=turnMsgShow style=\"width:200px;margin:10px auto\"> <alert style=width:200px v-if=myTurn>轮到您下棋</alert> <alert style=width:200px v-else>等待对方下棋</alert> </div> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> ";
 
 /***/ }),
 /* 60 */
@@ -47793,6 +47793,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
         return {
             gameId: "",
             againstId: "",
+            challengeId: "",
             inviteId: "",
             inviteName: "",
             nick: "",
@@ -47806,6 +47807,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             isInviteUser: false,
             button_start: "开始",
             btn_start_able: false,
+            invite_able: true,
             isAfter: true,
             myTurn: false,
             gameOver: false,
@@ -47816,7 +47818,8 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
     },
     computed: {
         socket: function () {
-            return __WEBPACK_IMPORTED_MODULE_1_socket_io_client__["connect"]('https://www.maijinta.cn:3001');
+            return __WEBPACK_IMPORTED_MODULE_1_socket_io_client__["connect"]('http://www.maijinta.cn:3001');
+            // return io.connect('http://localhost:3001');
         },
         playChess: function () {
             let canvas = document.getElementById('canvasPlay');
@@ -47844,9 +47847,9 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
         },
         inviteGame() {
             let t = this;
-            if (t.againstId != "") {
+            if (t.challengeId != "") {
                 t.loading = true;
-                t.socket.emit('inviteGame', t.againstId);
+                t.socket.emit('inviteGame', t.challengeId);
             }
             else {
                 t.notice_warning('您还未选择挑战的人呢！');
@@ -47857,10 +47860,10 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             t.socket.emit('acceptGame', t.inviteId);
             t.isInviteUser = false;
             t.gameStart = true;
+            t.againstId = t.inviteId;
             t.playChess.resize(450, 450);
             t.playChess.initBoard();
             t.playChess.initClick(t);
-            //对方接受了邀请playChess
         },
         btn_cancel() {
             let t = this;
@@ -47882,6 +47885,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
         btn_ok_startGame() {
             let t = this;
             t.btn_start_able = true;
+            t.invite_able = false;
             t.myTurn = !t.isAfter;
             t.nextBlack = !t.isAfter;
             t.turnMsgShow = true;
@@ -47900,7 +47904,6 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
         });
         t.socket.on('receiveGame', function (result) {
             t.inviteId = result.inviteId;
-            t.againstId = result.inviteId;
             t.inviteName = result.inviteName;
             t.modal_show2 = true;
         });
@@ -47909,6 +47912,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             if (result) {
                 t.gameStart = true;
                 t.isInviteUser = true;
+                t.againstId = t.challengeId;
                 t.playChess.resize(450, 450);
                 t.playChess.initBoard();
                 t.playChess.initClick(t);
@@ -47936,6 +47940,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             t.myTurn = !isAfter;
             t.nextBlack = !isAfter;
             t.turnMsgShow = true;
+            t.invite_able = false;
             if (t.gameOver) {
                 t.playChess.gameAgain(t);
             }
@@ -47946,6 +47951,27 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             t.nextBlack = data.nextBlack;
             t.playChess.drawAllChessPiece(t, newChessBoard);
             t.playChess.handleGameOver(t);
+        });
+        t.socket.on('runAway', function (socketId) {
+            if (socketId == t.againstId) {
+                t.notice_warning('您的对手逃跑了！');
+                t.socket.emit('gameOver');
+                setTimeout(new function () {
+                    t.gameOver = true;
+                    t.turnMsgShow = false;
+                    t.btn_start_able = false;
+                    t.invite_able = true;
+                    t.gameStart = false;
+                }, 1000);
+            }
+        });
+        t.socket.on('offline', function (againstId) {
+            if (t.againstId == againstId) {
+                t.notice_warning('您的对手离开了！');
+                t.gameStart = false;
+                t.btn_start_able = false;
+                t.invite_able = true;
+            }
         });
         t.socket.on('news', function (data) {
             t.socket.emit('my other event', "great");
@@ -48353,12 +48379,13 @@ class PlayChess {
     handleGameOver(t) {
         if (!t.gameOver) {
             let gameResult = this.isGameOver(t);
-            console.log("目前游戏进度：" + gameResult);
             if (gameResult != 0) {
+                t.socket.emit('gameOver');
                 t.gameOver = true;
                 t.turnMsgShow = false;
                 t.button_start = "再来一局";
                 t.btn_start_able = false;
+                t.invite_able = true;
                 if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter) {
                     t.isGameWin = true;
                 }

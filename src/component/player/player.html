@@ -3,7 +3,7 @@
     v-model="modal_show3"
     :closable="false"
     :mask-closable="false">
-    <i-input v-model="nick"  placeholder="请输入您的昵称..."></i-input>
+    <i-input v-model="nick" placeholder="请输入您的昵称..."></i-input>
     <div slot="footer">
       <i-button type="primary" size="large" long @click="emitNick">确定</i-button>
     </div>
@@ -22,19 +22,20 @@
     <i-button type="ghost" style="margin-left: 8px;" @click="modifyNick">修改昵称</i-button>
   </div>
 
+  <div v-show="invite_able" style="width: auto">
+    <i-select v-model="challengeId" style="width: 180px;margin-top:10px;" :filterable="true">
+      <i-option v-for="item in onlineList" :value="item.socketId" :label="item.nick" :key="item" :disabled = "!item.gameState">
+        <span>{{ item.nick }}</span>
+        <span v-if = "item.gameState" style="float:right;color:#59cc6b">在线可撩</span>
+        <span v-else style="float:right;color:#cc4949">对局中</span>
+      </i-option>
+    </i-select>
 
-  <Select v-model="againstId" style="width: 180px;margin-top:10px;" :filterable="true">
-    <Option v-for="item in onlineList" :value="item.socketId" :label="item.nick" :key="item" :disabled = "!item.gameState">
-      <span>{{ item.nick }}</span>
-      <span v-if = "item.gameState" style="float:right;color:#59cc6b">在线可撩</span>
-      <span v-else style="float:right;color:#cc4949">对局中</span>
-    </Option>
-  </Select>
-
-  <i-button type="primary" :loading="loading" style="margin-left:5px;margin-top:10px;" @click="inviteGame">
-    <span v-if="!loading">邀请对决</span>
-    <span v-else>等待对方接受...</span>
-  </i-button>
+    <i-button type="primary" :loading="loading" style="margin-left:5px;margin-top:10px;" @click="inviteGame">
+      <span v-if="!loading">邀请对决</span>
+      <span v-else>等待对方接受...</span>
+    </i-button>
+  </div>
 
   <Modal
     v-model="modal_show5"
@@ -61,11 +62,10 @@
       {{button_start}}
     </i-button>
 
-    <div v-show="turnMsgShow" style="margin: 10px auto;text-align: center;">
-      <Alert style="width: 200px;" v-if="myTurn" >轮到您下棋...</Alert>
-      <Alert style="width: 200px;" v-else >未轮到您下棋...</Alert>
+    <div v-show="turnMsgShow" style="width: 200px; margin: 10px auto;">
+      <Alert style="width: 200px;" v-if="myTurn" >轮到您下棋</Alert>
+      <Alert style="width: 200px;" v-else >等待对方下棋</Alert>
     </div>
-
 
     <canvas id="canvasPlay">
       您的浏览器不支持canvas动画效果

@@ -10,6 +10,7 @@ export default Vue.extend({
     return {
       gameId : "",
       againstId : "",
+      challengeId : "",
       inviteId : "",
       inviteName : "",
       nick : "",
@@ -23,6 +24,7 @@ export default Vue.extend({
       isInviteUser : false,
       button_start : "开始",
       btn_start_able : false,
+      invite_able : true,
       isAfter : true,
       myTurn : false,
       gameOver : false,
@@ -33,7 +35,8 @@ export default Vue.extend({
   },
   computed : {
     socket : function () {
-      return io.connect('https://www.maijinta.cn:3001');
+      return io.connect('http://www.maijinta.cn:3001');
+      // return io.connect('http://localhost:3001');
     },
     playChess: function () {
       let canvas = <HTMLCanvasElement>document.getElementById('canvasPlay');
@@ -61,9 +64,9 @@ export default Vue.extend({
     },
     inviteGame() {
       let t: any = this;
-      if (t.againstId != ""){
+      if (t.challengeId != ""){
         t.loading = true;
-        t.socket.emit('inviteGame', t.againstId);
+        t.socket.emit('inviteGame', t.challengeId);
       }else {
           t.notice_warning('您还未选择挑战的人呢！');
       }
@@ -74,11 +77,11 @@ export default Vue.extend({
       t.socket.emit('acceptGame', t.inviteId);
       t.isInviteUser = false;
       t.gameStart = true;
+      t.againstId = t.inviteId;
 
       t.playChess.resize(450, 450);
       t.playChess.initBoard();
       t.playChess.initClick(t);
-      //对方接受了邀请playChess
     },
     btn_cancel () {
       let t: any = this;
@@ -99,6 +102,7 @@ export default Vue.extend({
     btn_ok_startGame (){
       let t: any = this;
       t.btn_start_able = true;
+      t.invite_able = false;
       t.myTurn = !t.isAfter;
       t.nextBlack = !t.isAfter;
       t.turnMsgShow = true;
@@ -119,7 +123,6 @@ export default Vue.extend({
 
     t.socket.on('receiveGame', function (result) {
       t.inviteId = result.inviteId;
-      t.againstId = result.inviteId;
       t.inviteName = result.inviteName;
       t.modal_show2 = true;
     });
@@ -129,6 +132,7 @@ export default Vue.extend({
       if (result){
         t.gameStart = true;
         t.isInviteUser = true;
+        t.againstId = t.challengeId;
 
         t.playChess.resize(450, 450);
         t.playChess.initBoard();
@@ -159,6 +163,7 @@ export default Vue.extend({
       t.myTurn = !isAfter;
       t.nextBlack = !isAfter;
       t.turnMsgShow = true;
+      t.invite_able = false;
       if (t.gameOver){
         t.playChess.gameAgain(t);
       }
@@ -171,6 +176,31 @@ export default Vue.extend({
       t.nextBlack = data.nextBlack;
       t.playChess.drawAllChessPiece(t,newChessBoard);
       t.playChess.handleGameOver(t);
+    });
+
+    t.socket.on('runAway', function (socketId) {
+      if (socketId == t.againstId){
+        t.notice_warning('您的对手逃跑了！');
+        t.socket.emit('gameOver');
+
+        setTimeout(new function () {
+          t.gameOver = true;
+          t.turnMsgShow = false;
+          t.btn_start_able = false;
+          t.invite_able = true;
+          t.gameStart = false;
+        },1000);
+
+      }
+    });
+
+    t.socket.on('offline', function (againstId) {
+      if (t.againstId == againstId){
+        t.notice_warning('您的对手离开了！');
+        t.gameStart = false;
+        t.btn_start_able = false;
+        t.invite_able = true;
+      }
     });
 
     t.socket.on('news', function (data) {

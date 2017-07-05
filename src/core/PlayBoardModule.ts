@@ -218,13 +218,14 @@ export class PlayChess{
   handleGameOver(t:any) {
     if (!t.gameOver){
       let gameResult = this.isGameOver(t);
-      console.log("目前游戏进度："+ gameResult);
 
       if (gameResult != 0){
+        t.socket.emit('gameOver');
         t.gameOver = true;
         t.turnMsgShow = false;
         t.button_start = "再来一局";
         t.btn_start_able = false;
+        t.invite_able = true;
         if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter){
           t.isGameWin = true;
         }else {
