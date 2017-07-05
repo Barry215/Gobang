@@ -200,6 +200,8 @@ export default Vue.extend({
         t.gameStart = false;
         t.btn_start_able = false;
         t.invite_able = true;
+        t.turnMsgShow = false;
+
       }
     });
 

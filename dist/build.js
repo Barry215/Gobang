@@ -47971,6 +47971,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
                 t.gameStart = false;
                 t.btn_start_able = false;
                 t.invite_able = true;
+                t.turnMsgShow = false;
             }
         });
         t.socket.on('news', function (data) {
