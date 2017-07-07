@@ -58,8 +58,22 @@
       <i-switch v-model="isAfter"></i-switch>
     </Modal>
 
-    <i-button v-if="isInviteUser" type="primary" :disabled="btn_start_able" style="margin-top:7px;" @click="modal_show4 = true">
+    <Modal v-model="modal_show6" @on-ok="btn_ok_forgiveChess">
+      <p style="font-size: 18px">悔棋需要征求对手的同意，继续？</p>
+    </Modal>
+
+    <Modal v-model="modal_show7"
+           @on-ok="btn_agree_forgiveChess"
+           @on-cancel="btn_reject_forgiveChess">
+      <p style="font-size: 18px">对方请求悔棋，是否同意？</p>
+    </Modal>
+
+    <i-button v-if="isInviteUser" type="primary" :disabled="btn_start_able" style="margin-top:7px;margin-right:5px;" @click="modal_show4 = true">
       {{button_start}}
+    </i-button>
+
+    <i-button v-if="turnMsgShow" type="primary" :disabled="forgiveAble" style="margin-top:7px;" @click="modal_show6 = true">
+      悔棋
     </i-button>
 
     <div v-show="turnMsgShow" style="width: 200px; margin: 10px auto;">

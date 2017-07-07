@@ -20,6 +20,8 @@ export default Vue.extend({
       modal_show3 : true,
       modal_show4 : false,
       modal_show5 : false,
+      modal_show6 : false,
+      modal_show7 : false,
       gameStart : false,
       isInviteUser : false,
       button_start : "开始",
@@ -30,13 +32,18 @@ export default Vue.extend({
       gameOver : false,
       nextBlack : true,
       turnMsgShow : false,
-      isGameWin : true
+      isGameWin : true,
+      chessBoardList : [],
+      oldX : 0,
+      oldY : 0,
+      forgiveAble : true,
+      forgiveResponse : true
     }
   },
   computed : {
     socket : function () {
-      return io.connect('http://www.maijinta.cn:3001');
-      // return io.connect('http://localhost:3001');
+      // return io.connect('http://www.maijinta.cn:3001');
+      return io.connect('http://localhost:3001');
     },
     playChess: function () {
       let canvas = <HTMLCanvasElement>document.getElementById('canvasPlay');
@@ -111,6 +118,19 @@ export default Vue.extend({
       }
 
       t.socket.emit('gameTurn', {againstId : t.againstId,isAfter : t.isAfter});
+    },
+    btn_ok_forgiveChess (){
+      let t: any = this;
+      t.socket.emit('forgiveChessRequest', t.againstId);
+    },
+    btn_agree_forgiveChess (){
+      let t: any = this;
+      t.socket.emit('agreeForgiveChess', t.againstId);
+      t.playChess.forgiveChess(t);
+    },
+    btn_reject_forgiveChess (){
+      let t: any = this;
+      t.socket.emit('rejectForgiveChess', t.againstId);
     }
   },
   mounted(){
@@ -154,7 +174,6 @@ export default Vue.extend({
     });
 
     t.socket.on('refreshOnlineList', function (onlineList) {
-      console.log("onlineList:" + onlineList);
       t.onlineList = JSON.parse(onlineList);
     });
 
@@ -182,6 +201,7 @@ export default Vue.extend({
       if (socketId == t.againstId){
         t.notice_warning('您的对手逃跑了！');
         t.socket.emit('gameOver');
+        t.forgiveAble = true;
 
         setTimeout(new function () {
           t.gameOver = true;
@@ -189,6 +209,7 @@ export default Vue.extend({
           t.btn_start_able = false;
           t.invite_able = true;
           t.gameStart = false;
+
         },1000);
 
       }
@@ -201,6 +222,20 @@ export default Vue.extend({
         t.btn_start_able = false;
         t.invite_able = true;
         t.turnMsgShow = false;
+
+      }
+    });
+
+    t.socket.on('forgiveChessRequest', function () {
+      t.modal_show7 = true;
+    });
+
+    t.socket.on('forgiveChessResult', function (result) {
+      if (result){
+        t.notice_success("对方同意您悔棋");
+        t.playChess.forgiveChess(t);
+      }else {
+        t.notice_warning("对方不同意您悔棋");
 
       }
     });

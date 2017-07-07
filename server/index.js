@@ -113,6 +113,29 @@ io.on('connection', function (socket) {
     }
   });
 
+  socket.on('forgiveChessRequest', function (againstId) {
+    if (socket.id === againstId){
+      socket.emit('forgiveChessRequest');
+    }else {
+      socket.to(againstId).emit('forgiveChessRequest');
+    }
+  });
+
+  socket.on('agreeForgiveChess', function (againstId) {
+    if (socket.id === againstId){
+      socket.emit('forgiveChessResult',true);
+    }else {
+      socket.to(againstId).emit('forgiveChessResult',true);
+    }
+  });
+  socket.on('rejectForgiveChess', function (againstId) {
+    if (socket.id === againstId){
+      socket.emit('forgiveChessResult',false);
+    }else {
+      socket.to(againstId).emit('forgiveChessResult',false);
+    }
+  });
+
   socket.on('gameOver', function () {
     userList[socket.id].gameState = true;
 

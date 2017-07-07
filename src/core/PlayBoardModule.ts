@@ -64,6 +64,26 @@ export class PlayChess{
     this.context2D.fill();
   }
 
+  /**
+   * 画新棋子的标记
+   * @param coordinate 新棋子坐标
+   */
+  drawHighLight(coordinate : Coordinate){
+    //画竖线
+    this.context2D.beginPath();
+    this.context2D.moveTo(15 + coordinate.x * 30, 15 + coordinate.y * 30 + 4);
+    this.context2D.lineTo(15 + coordinate.x * 30, 15 + coordinate.y * 30 - 4);
+    this.context2D.strokeStyle = '#f82a15';
+    this.context2D.stroke();
+
+    //画直线
+    this.context2D.beginPath();
+    this.context2D.moveTo(15 + coordinate.x * 30 - 4, 15 + coordinate.y * 30);
+    this.context2D.lineTo(15 + coordinate.x * 30 + 4, 15 + coordinate.y * 30);
+    this.context2D.strokeStyle = '#f82a15';
+    this.context2D.stroke();
+  }
+
 
   /**
    * 更新棋盘
@@ -75,7 +95,16 @@ export class PlayChess{
       for (let j = 0; j < 15; j++) {
         if (t.chessBoard[i][j] == 0 && newChessBoard[i][j] != 0){
           this.drawChessPiece(new Piece(new Coordinate(i, j), newChessBoard[i][j] == 1));
+          this.drawHighLight(new Coordinate(i, j));
+          if (t.chessBoardList.length != 0){
+            this.drawChessPiece(new Piece(new Coordinate(t.oldX, t.oldY), t.chessBoard[t.oldX][t.oldY] == 1));
+          }
+          t.oldX = i;
+          t.oldY = j;
           t.chessBoard[i][j] = newChessBoard[i][j];
+          t.chessBoardList.push(t.chessBoard);
+          console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
+
         }
       }
     }
@@ -106,12 +135,29 @@ export class PlayChess{
       }
 
       that.drawChessPiece(new Piece(new Coordinate(i, j), t.nextBlack));
+      that.drawHighLight(new Coordinate(i, j));
+      if (t.chessBoardList.length != 0){
+        that.drawChessPiece(new Piece(new Coordinate(t.oldX, t.oldY), !t.nextBlack));
+      }
+      t.oldX = i;
+      t.oldY = j;
+
+
       t.myTurn = false;
       if (!t.nextBlack){
         t.chessBoard[i][j] = 2;
       }else {
         t.chessBoard[i][j] = 1;
       }
+
+      t.chessBoardList.push(t.chessBoard);
+
+      console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
+
+      if (t.forgiveAble){
+        t.forgiveAble = false;
+      }
+
 
       t.socket.emit('pushChessBoard', {againstId: t.againstId, chessBoard: JSON.stringify(t.chessBoard), nextBlack: !t.nextBlack});
 
@@ -225,6 +271,7 @@ export class PlayChess{
         t.turnMsgShow = false;
         t.button_start = "再来一局";
         t.btn_start_able = false;
+        t.forgiveAble = true;
         t.invite_able = true;
         if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter){
           t.isGameWin = true;
@@ -235,6 +282,66 @@ export class PlayChess{
         t.modal_show5 = true;
       }
     }
+
+  }
+
+  forgiveChess(t:any){
+    this.context2D.clearRect(0,0,450,450);
+    this.initBoard();
+    if (t.nextBlack == (t.chessBoard[t.oldX][t.oldY] == 1)) {
+      t.chessBoardList.pop();
+      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
+      t.chessBoard[t.oldX][t.oldY] = 0;
+
+      // 悔棋不仅要考虑oldX和old，还要考虑切换谁下turn，两边悔棋也不能用同一函数，目前bug可能是赋值了引用，导致数组内元素都一样
+      // for (let i = 0; i < 15; i++) {
+      //   for (let j = 0; j < 15; j++) {
+      //     if (t.chessBoardList[t.chessBoardList.length-1][i][j] == 0 && t.chessBoardList[t.chessBoardList.length-2][i][j] != 0){
+      //
+      //     }
+      //   }
+      // }
+      if (t.chessBoardList.length != 0){
+        for (let i = 0; i < 15; i++) {
+          for (let j = 0; j < 15; j++) {
+            if (t.chessBoard[i][j] != 0){
+              this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+            }
+          }
+        }
+      }
+
+
+    }else {
+      t.chessBoardList.pop();
+      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
+
+      t.chessBoardList.pop();
+      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
+
+      if (t.chessBoardList.length != 0){
+        let arr = t.chessBoardList[t.chessBoardList.length-1];
+
+        console.log("chessBoardList pop之后:" + JSON.stringify(arr));
+
+        for (let i = 0; i < 15; i++) {
+          for (let j = 0; j < 15; j++) {
+            if (arr[i][j] != 0){
+              this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+            }
+            t.chessBoard[i][j] = arr[i][j];
+          }
+        }
+      }else {
+        for (let i = 0; i < 15; i++) {
+          for (let j = 0; j < 15; j++) {
+            t.chessBoard[i][j] = 0;
+          }
+        }
+      }
+    }
+
+    t.notice_success("悔棋成功！");
 
   }
 
