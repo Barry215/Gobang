@@ -64,19 +64,27 @@ io.on('connection', function (socket) {
     }
   });
 
+  socket.on('confirmAccept', function (data) {
+    if (socket.id === data.challengeId){
+      socket.emit('confirmResult', data.result);
+    }else {
+      socket.to(data.challengeId).emit('confirmResult',data.result);
+    }
+  });
+
   socket.on('acceptGame', function (inviteId) {
     if (socket.id === inviteId){
-      socket.emit('inviteResult', true);
+      socket.emit('inviteResult', {challengeId : socket.id , result : true});
     }else {
-      socket.to(inviteId).emit('inviteResult', true);
+      socket.to(inviteId).emit('inviteResult', {challengeId : socket.id , result : true});
     }
   });
 
   socket.on('refuseGame', function (inviteId) {
     if (socket.id === inviteId){
-      socket.emit('inviteResult', false);
+      socket.emit('inviteResult', {challengeId : socket.id , result : false});
     }else {
-      socket.to(inviteId).emit('inviteResult', false);
+      socket.to(inviteId).emit('inviteResult', {challengeId : socket.id , result : false});
     }
   });
 
@@ -133,6 +141,14 @@ io.on('connection', function (socket) {
       socket.emit('forgiveChessResult',false);
     }else {
       socket.to(againstId).emit('forgiveChessResult',false);
+    }
+  });
+
+  socket.on('surrenderRequest', function (againstId) {
+    if (socket.id === againstId){
+      socket.emit('acceptSurrender');
+    }else {
+      socket.to(againstId).emit('acceptSurrender');
     }
   });
 

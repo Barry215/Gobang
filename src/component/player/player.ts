@@ -22,6 +22,7 @@ export default Vue.extend({
       modal_show5 : false,
       modal_show6 : false,
       modal_show7 : false,
+      modal_show8 : false,
       gameStart : false,
       isInviteUser : false,
       button_start : "开始",
@@ -82,13 +83,6 @@ export default Vue.extend({
     btn_ok () {
       let t: any = this;
       t.socket.emit('acceptGame', t.inviteId);
-      t.isInviteUser = false;
-      t.gameStart = true;
-      t.againstId = t.inviteId;
-
-      t.playChess.resize(450, 450);
-      t.playChess.initBoard();
-      t.playChess.initClick(t);
     },
     btn_cancel () {
       let t: any = this;
@@ -115,6 +109,8 @@ export default Vue.extend({
       t.turnMsgShow = true;
       if (t.gameOver){
         t.playChess.gameAgain(t);
+      }else {
+        t.playChess.initClick(t);
       }
 
       t.socket.emit('gameTurn', {againstId : t.againstId,isAfter : t.isAfter});
@@ -125,12 +121,21 @@ export default Vue.extend({
     },
     btn_agree_forgiveChess (){
       let t: any = this;
-      t.socket.emit('agreeForgiveChess', t.againstId);
-      t.playChess.forgiveChess(t);
+      t.playChess.forgiveChess(t,false);
+      if (t.gameId != t.againstId){
+        t.socket.emit('agreeForgiveChess', t.againstId);
+      }else {
+        t.myTurn = true;
+      }
     },
     btn_reject_forgiveChess (){
       let t: any = this;
       t.socket.emit('rejectForgiveChess', t.againstId);
+    },
+    btn_surrender (){
+      let t: any = this;
+      t.socket.emit('surrenderRequest', t.againstId);
+      t.playChess.handleSurrender(t,true);
     }
   },
   mounted(){
@@ -147,21 +152,28 @@ export default Vue.extend({
       t.modal_show2 = true;
     });
 
-    t.socket.on('inviteResult', function (result) {
-      t.loading = false;
-      if (result){
-        t.gameStart = true;
-        t.isInviteUser = true;
-        t.againstId = t.challengeId;
+    t.socket.on('inviteResult', function (data) {
+      if (data.result){
+        if (t.challengeId == data.challengeId && t.loading){
+          t.gameStart = true;
+          t.isInviteUser = true;
+          t.againstId = t.challengeId;
 
-        t.playChess.resize(450, 450);
-        t.playChess.initBoard();
-        t.playChess.initClick(t);
+          t.notice_success('对方接受了邀请！');
+          t.socket.emit('confirmAccept', {challengeId: t.challengeId, result: true});
 
-        t.notice_success('对方接受了邀请！');
+          t.playChess.resize(450, 450);
+          t.playChess.initBoard();
+        }else {
+          t.socket.emit('confirmAccept', {challengeId: t.challengeId, result: false});
+        }
       }else {
-        t.notice_warning('对方并不想理你，并丢给你一条狗🐶');
+        if (t.challengeId == data.challengeId && t.loading){
+          t.notice_warning('对方并不想理你，并丢给你一条狗🐶');
+        }
       }
+      t.loading = false;
+
     });
 
     t.socket.on('initNickResult', function (result) {
@@ -185,6 +197,8 @@ export default Vue.extend({
       t.invite_able = false;
       if (t.gameOver){
         t.playChess.gameAgain(t);
+      }else {
+        t.playChess.initClick(t);
       }
 
     });
@@ -233,11 +247,31 @@ export default Vue.extend({
     t.socket.on('forgiveChessResult', function (result) {
       if (result){
         t.notice_success("对方同意您悔棋");
-        t.playChess.forgiveChess(t);
+        t.playChess.forgiveChess(t,true);
       }else {
         t.notice_warning("对方不同意您悔棋");
 
       }
+    });
+
+    t.socket.on('confirmResult', function (result) {
+      if (result){
+        t.isInviteUser = false;
+        t.gameStart = true;
+        t.againstId = t.inviteId;
+
+        t.playChess.resize(450, 450);
+        t.playChess.initBoard();
+
+
+        t.notice_success("对局已经准备好了");
+      }else {
+        t.notice_warning("对方已经取消了邀请");
+      }
+    });
+
+    t.socket.on('acceptSurrender', function () {
+      t.playChess.handleSurrender(t,false);
     });
 
     t.socket.on('news', function (data) {

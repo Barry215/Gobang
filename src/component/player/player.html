@@ -35,6 +35,10 @@
       <span v-if="!loading">邀请对决</span>
       <span v-else>等待对方接受...</span>
     </i-button>
+
+    <i-button v-if="loading" type="primary" style="margin-left:5px;margin-top:10px;" @click="loading = false">
+      取消
+    </i-button>
   </div>
 
   <Modal
@@ -68,12 +72,21 @@
       <p style="font-size: 18px">对方请求悔棋，是否同意？</p>
     </Modal>
 
+    <Modal v-model="modal_show8"
+           @on-ok="btn_surrender">
+      <p style="font-size: 18px">确定要认输吗？</p>
+    </Modal>
+
     <i-button v-if="isInviteUser" type="primary" :disabled="btn_start_able" style="margin-top:7px;margin-right:5px;" @click="modal_show4 = true">
       {{button_start}}
     </i-button>
 
-    <i-button v-if="turnMsgShow" type="primary" :disabled="forgiveAble" style="margin-top:7px;" @click="modal_show6 = true">
+    <i-button v-if="turnMsgShow" type="primary" :disabled="forgiveAble" style="margin-top:7px;margin-right:5px;" @click="modal_show6 = true">
       悔棋
+    </i-button>
+
+    <i-button v-if="turnMsgShow" type="primary" style="margin-top:7px;" @click="modal_show8 = true">
+      认输
     </i-button>
 
     <div v-show="turnMsgShow" style="width: 200px; margin: 10px auto;">

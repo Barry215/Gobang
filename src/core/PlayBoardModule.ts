@@ -102,7 +102,7 @@ export class PlayChess{
           t.oldX = i;
           t.oldY = j;
           t.chessBoard[i][j] = newChessBoard[i][j];
-          t.chessBoardList.push(t.chessBoard);
+          t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
           console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
 
         }
@@ -150,7 +150,8 @@ export class PlayChess{
         t.chessBoard[i][j] = 1;
       }
 
-      t.chessBoardList.push(t.chessBoard);
+      t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
+      // t.chessBoardList.push(t.chessBoard.slice());
 
       console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
 
@@ -285,51 +286,64 @@ export class PlayChess{
 
   }
 
-  forgiveChess(t:any){
+  forgiveChess(t:any,isSubmitUser:boolean){
     this.context2D.clearRect(0,0,450,450);
     this.initBoard();
-    if (t.nextBlack == (t.chessBoard[t.oldX][t.oldY] == 1)) {
+    if (isSubmitUser != t.myTurn) {
       t.chessBoardList.pop();
-      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
+      console.log("chessBoardList推出"+JSON.stringify(t.chessBoardList));
+
       t.chessBoard[t.oldX][t.oldY] = 0;
 
-      // 悔棋不仅要考虑oldX和old，还要考虑切换谁下turn，两边悔棋也不能用同一函数，目前bug可能是赋值了引用，导致数组内元素都一样
-      // for (let i = 0; i < 15; i++) {
-      //   for (let j = 0; j < 15; j++) {
-      //     if (t.chessBoardList[t.chessBoardList.length-1][i][j] == 0 && t.chessBoardList[t.chessBoardList.length-2][i][j] != 0){
-      //
-      //     }
-      //   }
-      // }
       if (t.chessBoardList.length != 0){
         for (let i = 0; i < 15; i++) {
           for (let j = 0; j < 15; j++) {
             if (t.chessBoard[i][j] != 0){
               this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+              if (t.chessBoardList.length == 1){
+                this.drawHighLight(new Coordinate(i, j));
+                t.oldX = i;
+                t.oldY = j;
+              }else {
+                if (t.chessBoardList[t.chessBoardList.length - 2][i][j] == 0){
+                  this.drawHighLight(new Coordinate(i, j));
+                  t.oldX = i;
+                  t.oldY = j;
+                }
+              }
             }
           }
         }
       }
-
-
     }else {
       t.chessBoardList.pop();
-      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
-
+      // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
       t.chessBoardList.pop();
-      console.log("chessBoardList pop之后:" + JSON.stringify(t.chessBoardList));
+      // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+
 
       if (t.chessBoardList.length != 0){
-        let arr = t.chessBoardList[t.chessBoardList.length-1];
-
-        console.log("chessBoardList pop之后:" + JSON.stringify(arr));
+        // console.log("chessBoardList末尾："+JSON.stringify(t.chessBoardList[t.chessBoardList.length-1]));
+        // t.chessBoard = t.chessBoardList[t.chessBoardList.length-1]; 不知道为什么赋值无效
 
         for (let i = 0; i < 15; i++) {
           for (let j = 0; j < 15; j++) {
-            if (arr[i][j] != 0){
+            if (t.chessBoardList[t.chessBoardList.length-1][i][j] != 0){
               this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+              if (t.chessBoardList.length == 1){
+                this.drawHighLight(new Coordinate(i, j));
+                t.oldX = i;
+                t.oldY = j;
+              }else {
+                if (t.chessBoardList[t.chessBoardList.length - 2][i][j] == 0){
+                  this.drawHighLight(new Coordinate(i, j));
+                  t.oldX = i;
+                  t.oldY = j;
+                }
+              }
+            }else {
+              t.chessBoard[i][j] = 0;
             }
-            t.chessBoard[i][j] = arr[i][j];
           }
         }
       }else {
@@ -338,13 +352,44 @@ export class PlayChess{
             t.chessBoard[i][j] = 0;
           }
         }
+        t.oldX = 0;
+        t.oldY = 0;
       }
+      // console.log("chessBoard更新："+JSON.stringify(t.chessBoard));
     }
 
     t.notice_success("悔棋成功！");
+    if (isSubmitUser){
+        t.myTurn = true;
+    }else {
+        t.myTurn = false;
+    }
 
   }
 
+  /**
+   * 处理认输
+   * @param t
+   * @param mySurrender
+   */
+  handleSurrender(t:any,mySurrender:boolean){
+    t.socket.emit('gameOver');
+    t.gameOver = true;
+    t.turnMsgShow = false;
+    t.button_start = "再来一局";
+    t.btn_start_able = false;
+    t.forgiveAble = true;
+    t.invite_able = true;
+    if (mySurrender){
+      t.isGameWin = false;
+    }
+    t.modal_show5 = true;
+  }
+
+  /**
+   * 再来游戏的配置
+   * @param t
+   */
   gameAgain(t:any){
     this.context2D.clearRect(0,0,450,450);
     this.initBoard();
@@ -353,6 +398,9 @@ export class PlayChess{
         t.chessBoard[i][j] = 0;
       }
     }
+    t.chessBoardList.splice(0,t.chessBoardList.length);
+    t.oldX = 0;
+    t.oldY = 0;
     t.gameOver = false;
   }
 
