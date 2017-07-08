@@ -46217,7 +46217,7 @@ module.exports = "<div id=div_index> <i-button type=primary style=margin-bottom:
 /* 59 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <div v-show=invite_able style=width:auto> <i-select v-model=challengeId style=width:180px;margin-top:10px :filterable=true> <i-option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </i-option> </i-select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> </div> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <div v-show=turnMsgShow style=\"width:200px;margin:10px auto\"> <alert style=width:200px v-if=myTurn>轮到您下棋</alert> <alert style=width:200px v-else>等待对方下棋</alert> </div> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> ";
+module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <div v-show=invite_able style=width:auto> <i-select v-model=challengeId style=width:180px;margin-top:10px :filterable=true> <i-option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </i-option> </i-select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> <i-button v-if=loading type=primary style=margin-left:5px;margin-top:10px @click=\"loading = false\"> 取消 </i-button> </div> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <modal v-model=modal_show6 @on-ok=btn_ok_forgiveChess> <p style=font-size:18px>悔棋需要征求对手的同意，继续？</p> </modal> <modal v-model=modal_show7 @on-ok=btn_agree_forgiveChess @on-cancel=btn_reject_forgiveChess> <p style=font-size:18px>对方请求悔棋，是否同意？</p> </modal> <modal v-model=modal_show8 @on-ok=btn_surrender> <p style=font-size:18px>确定要认输吗？</p> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px;margin-right:5px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <i-button v-if=turnMsgShow type=primary :disabled=forgiveAble style=margin-top:7px;margin-right:5px @click=\"modal_show6 = true\"> 悔棋 </i-button> <i-button v-if=turnMsgShow type=primary style=margin-top:7px @click=\"modal_show8 = true\"> 认输 </i-button> <div v-show=turnMsgShow style=\"width:200px;margin:10px auto\"> <alert style=width:200px v-if=myTurn>轮到您下棋</alert> <alert style=width:200px v-else>等待对方下棋</alert> </div> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> ";
 
 /***/ }),
 /* 60 */
@@ -47803,6 +47803,9 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             modal_show3: true,
             modal_show4: false,
             modal_show5: false,
+            modal_show6: false,
+            modal_show7: false,
+            modal_show8: false,
             gameStart: false,
             isInviteUser: false,
             button_start: "开始",
@@ -47813,7 +47816,12 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             gameOver: false,
             nextBlack: true,
             turnMsgShow: false,
-            isGameWin: true
+            isGameWin: true,
+            chessBoardList: [],
+            oldX: 0,
+            oldY: 0,
+            forgiveAble: true,
+            forgiveResponse: true
         };
     },
     computed: {
@@ -47858,12 +47866,6 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
         btn_ok() {
             let t = this;
             t.socket.emit('acceptGame', t.inviteId);
-            t.isInviteUser = false;
-            t.gameStart = true;
-            t.againstId = t.inviteId;
-            t.playChess.resize(450, 450);
-            t.playChess.initBoard();
-            t.playChess.initClick(t);
         },
         btn_cancel() {
             let t = this;
@@ -47892,7 +47894,33 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             if (t.gameOver) {
                 t.playChess.gameAgain(t);
             }
+            else {
+                t.playChess.initClick(t);
+            }
             t.socket.emit('gameTurn', { againstId: t.againstId, isAfter: t.isAfter });
+        },
+        btn_ok_forgiveChess() {
+            let t = this;
+            t.socket.emit('forgiveChessRequest', t.againstId);
+        },
+        btn_agree_forgiveChess() {
+            let t = this;
+            t.playChess.forgiveChess(t, false);
+            if (t.gameId != t.againstId) {
+                t.socket.emit('agreeForgiveChess', t.againstId);
+            }
+            else {
+                t.myTurn = true;
+            }
+        },
+        btn_reject_forgiveChess() {
+            let t = this;
+            t.socket.emit('rejectForgiveChess', t.againstId);
+        },
+        btn_surrender() {
+            let t = this;
+            t.socket.emit('surrenderRequest', t.againstId);
+            t.playChess.handleSurrender(t, true);
         }
     },
     mounted() {
@@ -47907,20 +47935,27 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             t.inviteName = result.inviteName;
             t.modal_show2 = true;
         });
-        t.socket.on('inviteResult', function (result) {
-            t.loading = false;
-            if (result) {
-                t.gameStart = true;
-                t.isInviteUser = true;
-                t.againstId = t.challengeId;
-                t.playChess.resize(450, 450);
-                t.playChess.initBoard();
-                t.playChess.initClick(t);
-                t.notice_success('对方接受了邀请！');
+        t.socket.on('inviteResult', function (data) {
+            if (data.result) {
+                if (t.challengeId == data.challengeId && t.loading) {
+                    t.gameStart = true;
+                    t.isInviteUser = true;
+                    t.againstId = t.challengeId;
+                    t.notice_success('对方接受了邀请！');
+                    t.socket.emit('confirmAccept', { challengeId: t.challengeId, result: true });
+                    t.playChess.resize(450, 450);
+                    t.playChess.initBoard();
+                }
+                else {
+                    t.socket.emit('confirmAccept', { challengeId: t.challengeId, result: false });
+                }
             }
             else {
-                t.notice_warning('对方并不想理你，并丢给你一条狗🐶');
+                if (t.challengeId == data.challengeId && t.loading) {
+                    t.notice_warning('对方并不想理你，并丢给你一条狗🐶');
+                }
             }
+            t.loading = false;
         });
         t.socket.on('initNickResult', function (result) {
             if (result) {
@@ -47932,7 +47967,6 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             }
         });
         t.socket.on('refreshOnlineList', function (onlineList) {
-            console.log("onlineList:" + onlineList);
             t.onlineList = JSON.parse(onlineList);
         });
         t.socket.on('isAfter', function (isAfter) {
@@ -47943,6 +47977,9 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             t.invite_able = false;
             if (t.gameOver) {
                 t.playChess.gameAgain(t);
+            }
+            else {
+                t.playChess.initClick(t);
             }
         });
         t.socket.on('pullChessBoard', function (data) {
@@ -47956,6 +47993,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             if (socketId == t.againstId) {
                 t.notice_warning('您的对手逃跑了！');
                 t.socket.emit('gameOver');
+                t.forgiveAble = true;
                 setTimeout(new function () {
                     t.gameOver = true;
                     t.turnMsgShow = false;
@@ -47973,6 +48011,37 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
                 t.invite_able = true;
                 t.turnMsgShow = false;
             }
+        });
+        t.socket.on('forgiveChessRequest', function () {
+            t.modal_show7 = true;
+        });
+        t.socket.on('forgiveChessResult', function (result) {
+            if (result) {
+                t.notice_success("对方同意您悔棋");
+                t.playChess.forgiveChess(t, true);
+            }
+            else {
+                t.notice_warning("对方不同意您悔棋");
+            }
+        });
+        t.socket.on('confirmResult', function (result) {
+            if (result) {
+                t.isInviteUser = false;
+                t.gameStart = true;
+                t.againstId = t.inviteId;
+                t.playChess.resize(450, 450);
+                t.playChess.initBoard();
+                t.notice_success("对局已经准备好了");
+                if (t.againstId == t.gameId) {
+                    t.isInviteUser = true;
+                }
+            }
+            else {
+                t.notice_warning("对方已经取消了邀请");
+            }
+        });
+        t.socket.on('acceptSurrender', function () {
+            t.playChess.handleSurrender(t, false);
         });
         t.socket.on('news', function (data) {
             t.socket.emit('my other event', "great");
@@ -48233,6 +48302,24 @@ class PlayChess {
         this.context2D.fill();
     }
     /**
+     * 画新棋子的标记
+     * @param coordinate 新棋子坐标
+     */
+    drawHighLight(coordinate) {
+        //画竖线
+        this.context2D.beginPath();
+        this.context2D.moveTo(15 + coordinate.x * 30, 15 + coordinate.y * 30 + 4);
+        this.context2D.lineTo(15 + coordinate.x * 30, 15 + coordinate.y * 30 - 4);
+        this.context2D.strokeStyle = '#f82a15';
+        this.context2D.stroke();
+        //画直线
+        this.context2D.beginPath();
+        this.context2D.moveTo(15 + coordinate.x * 30 - 4, 15 + coordinate.y * 30);
+        this.context2D.lineTo(15 + coordinate.x * 30 + 4, 15 + coordinate.y * 30);
+        this.context2D.strokeStyle = '#f82a15';
+        this.context2D.stroke();
+    }
+    /**
      * 更新棋盘
      * @param t
      * @param newChessBoard
@@ -48242,7 +48329,15 @@ class PlayChess {
             for (let j = 0; j < 15; j++) {
                 if (t.chessBoard[i][j] == 0 && newChessBoard[i][j] != 0) {
                     this.drawChessPiece(new Piece(new Coordinate(i, j), newChessBoard[i][j] == 1));
+                    this.drawHighLight(new Coordinate(i, j));
+                    if (t.chessBoardList.length != 0) {
+                        this.drawChessPiece(new Piece(new Coordinate(t.oldX, t.oldY), t.chessBoard[t.oldX][t.oldY] == 1));
+                    }
+                    t.oldX = i;
+                    t.oldY = j;
                     t.chessBoard[i][j] = newChessBoard[i][j];
+                    t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
+                    console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
                 }
             }
         }
@@ -48269,12 +48364,24 @@ class PlayChess {
                 return;
             }
             that.drawChessPiece(new Piece(new Coordinate(i, j), t.nextBlack));
+            that.drawHighLight(new Coordinate(i, j));
+            if (t.chessBoardList.length != 0) {
+                that.drawChessPiece(new Piece(new Coordinate(t.oldX, t.oldY), !t.nextBlack));
+            }
+            t.oldX = i;
+            t.oldY = j;
             t.myTurn = false;
             if (!t.nextBlack) {
                 t.chessBoard[i][j] = 2;
             }
             else {
                 t.chessBoard[i][j] = 1;
+            }
+            t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
+            // t.chessBoardList.push(t.chessBoard.slice());
+            console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
+            if (t.forgiveAble) {
+                t.forgiveAble = false;
             }
             t.socket.emit('pushChessBoard', { againstId: t.againstId, chessBoard: JSON.stringify(t.chessBoard), nextBlack: !t.nextBlack });
             that.handleGameOver(t);
@@ -48386,6 +48493,7 @@ class PlayChess {
                 t.turnMsgShow = false;
                 t.button_start = "再来一局";
                 t.btn_start_able = false;
+                t.forgiveAble = true;
                 t.invite_able = true;
                 if (gameResult == 1 && !t.isAfter || gameResult == 2 && t.isAfter) {
                     t.isGameWin = true;
@@ -48397,6 +48505,105 @@ class PlayChess {
             }
         }
     }
+    forgiveChess(t, isSubmitUser) {
+        this.context2D.clearRect(0, 0, 450, 450);
+        this.initBoard();
+        if (isSubmitUser != t.myTurn) {
+            t.chessBoardList.pop();
+            console.log("chessBoardList推出" + JSON.stringify(t.chessBoardList));
+            t.chessBoard[t.oldX][t.oldY] = 0;
+            if (t.chessBoardList.length != 0) {
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        if (t.chessBoard[i][j] != 0) {
+                            this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+                            if (t.chessBoardList.length == 1) {
+                                this.drawHighLight(new Coordinate(i, j));
+                                t.oldX = i;
+                                t.oldY = j;
+                            }
+                            else {
+                                if (t.chessBoardList[t.chessBoardList.length - 2][i][j] == 0) {
+                                    this.drawHighLight(new Coordinate(i, j));
+                                    t.oldX = i;
+                                    t.oldY = j;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            t.chessBoardList.pop();
+            // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+            t.chessBoardList.pop();
+            // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+            if (t.chessBoardList.length != 0) {
+                // console.log("chessBoardList末尾："+JSON.stringify(t.chessBoardList[t.chessBoardList.length-1]));
+                // t.chessBoard = t.chessBoardList[t.chessBoardList.length-1]; 不知道为什么赋值无效
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        if (t.chessBoardList[t.chessBoardList.length - 1][i][j] != 0) {
+                            this.drawChessPiece(new Piece(new Coordinate(i, j), t.chessBoard[i][j] == 1));
+                            if (t.chessBoardList.length == 1) {
+                                this.drawHighLight(new Coordinate(i, j));
+                                t.oldX = i;
+                                t.oldY = j;
+                            }
+                            else {
+                                if (t.chessBoardList[t.chessBoardList.length - 2][i][j] == 0) {
+                                    this.drawHighLight(new Coordinate(i, j));
+                                    t.oldX = i;
+                                    t.oldY = j;
+                                }
+                            }
+                        }
+                        else {
+                            t.chessBoard[i][j] = 0;
+                        }
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        t.chessBoard[i][j] = 0;
+                    }
+                }
+                t.oldX = 0;
+                t.oldY = 0;
+            }
+            // console.log("chessBoard更新："+JSON.stringify(t.chessBoard));
+        }
+        t.notice_success("悔棋成功！");
+        if (isSubmitUser) {
+            t.myTurn = true;
+        }
+        else {
+            t.myTurn = false;
+        }
+    }
+    /**
+     * 处理认输
+     * @param t
+     * @param mySurrender
+     */
+    handleSurrender(t, mySurrender) {
+        t.socket.emit('gameOver');
+        t.gameOver = true;
+        t.turnMsgShow = false;
+        t.button_start = "再来一局";
+        t.btn_start_able = false;
+        t.forgiveAble = true;
+        t.invite_able = true;
+        t.isGameWin = !mySurrender;
+        t.modal_show5 = true;
+    }
+    /**
+     * 再来游戏的配置
+     * @param t
+     */
     gameAgain(t) {
         this.context2D.clearRect(0, 0, 450, 450);
         this.initBoard();
@@ -48405,6 +48612,9 @@ class PlayChess {
                 t.chessBoard[i][j] = 0;
             }
         }
+        t.chessBoardList.splice(0, t.chessBoardList.length);
+        t.oldX = 0;
+        t.oldY = 0;
         t.gameOver = false;
     }
 }

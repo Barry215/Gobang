@@ -380,9 +380,7 @@ export class PlayChess{
     t.btn_start_able = false;
     t.forgiveAble = true;
     t.invite_able = true;
-    if (mySurrender){
-      t.isGameWin = false;
-    }
+    t.isGameWin = !mySurrender;
     t.modal_show5 = true;
   }
 

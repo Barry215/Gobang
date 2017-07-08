@@ -43,8 +43,8 @@ export default Vue.extend({
   },
   computed : {
     socket : function () {
-      // return io.connect('http://www.maijinta.cn:3001');
-      return io.connect('http://localhost:3001');
+      return io.connect('http://www.maijinta.cn:3001');
+      // return io.connect('http://localhost:3001');
     },
     playChess: function () {
       let canvas = <HTMLCanvasElement>document.getElementById('canvasPlay');
@@ -265,6 +265,9 @@ export default Vue.extend({
 
 
         t.notice_success("对局已经准备好了");
+        if (t.againstId == t.gameId){
+          t.isInviteUser = true;
+        }
       }else {
         t.notice_warning("对方已经取消了邀请");
       }
