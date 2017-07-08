@@ -43732,7 +43732,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "#chess{text-align:center}#canvas{width:450px;height:450px;display:block;margin:15px auto;box-shadow:-2px -2px 2px #efefef,5px 5px 5px #b9b9b9}#btn_start{width:100px}", ""]);
+exports.push([module.i, "#chess{text-align:center;margin-top:15px}#canvas_container{overflow:scroll}#canvas{width:450px;height:450px;display:block;margin:15px auto;box-shadow:-2px -2px 2px #efefef,5px 5px 5px #b9b9b9}#btn_start{width:100px}", ""]);
 
 // exports
 
@@ -43760,7 +43760,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "#div_player{text-align:center}#canvasPlay{width:450px;height:450px;display:block;margin:15px auto;box-shadow:-2px -2px 2px #efefef,5px 5px 5px #b9b9b9}", ""]);
+exports.push([module.i, "#div_player{text-align:center}#canvas_container{overflow:scroll}#canvasPlay{width:450px;height:450px;display:block;margin:15px auto;box-shadow:-2px -2px 2px #efefef,5px 5px 5px #b9b9b9}", ""]);
 
 // exports
 
@@ -46205,7 +46205,7 @@ module.exports = "<div> <i-menu mode=horizontal theme=primary active-name=1> <me
 /* 57 */
 /***/ (function(module, exports) {
 
-module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:30px>玩家先下</span> <i-switch v-model=isFirst></i-switch> <span style=margin-left:30px>执黑棋</span> <i-switch v-model=isBlack></i-switch> </modal> <card> <div id=chess> <i-button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</i-button> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </card> </div> ";
+module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:30px>玩家先下</span> <i-switch v-model=isFirst></i-switch> <span style=margin-left:30px>执黑棋</span> <i-switch v-model=isBlack></i-switch> </modal> <div id=chess> <i-button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</i-button> <div id=canvas_container> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> </div> ";
 
 /***/ }),
 /* 58 */
@@ -46217,7 +46217,7 @@ module.exports = "<div id=div_index> <i-button type=primary style=margin-bottom:
 /* 59 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <div v-show=invite_able style=width:auto> <i-select v-model=challengeId style=width:180px;margin-top:10px :filterable=true> <i-option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </i-option> </i-select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> <i-button v-if=loading type=primary style=margin-left:5px;margin-top:10px @click=\"loading = false\"> 取消 </i-button> </div> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <modal v-model=modal_show6 @on-ok=btn_ok_forgiveChess> <p style=font-size:18px>悔棋需要征求对手的同意，继续？</p> </modal> <modal v-model=modal_show7 @on-ok=btn_agree_forgiveChess @on-cancel=btn_reject_forgiveChess> <p style=font-size:18px>对方请求悔棋，是否同意？</p> </modal> <modal v-model=modal_show8 @on-ok=btn_surrender> <p style=font-size:18px>确定要认输吗？</p> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px;margin-right:5px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <i-button v-if=turnMsgShow type=primary :disabled=forgiveAble style=margin-top:7px;margin-right:5px @click=\"modal_show6 = true\"> 悔棋 </i-button> <i-button v-if=turnMsgShow type=primary style=margin-top:7px @click=\"modal_show8 = true\"> 认输 </i-button> <div v-show=turnMsgShow style=\"width:200px;margin:10px auto\"> <alert style=width:200px v-if=myTurn>轮到您下棋</alert> <alert style=width:200px v-else>等待对方下棋</alert> </div> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> ";
+module.exports = "<div id=div_player> <modal v-model=modal_show3 :closable=false :mask-closable=false> <i-input v-model=nick placeholder=请输入您的昵称...></i-input> <div slot=footer> <i-button type=primary size=large long @click=emitNick>确定</i-button> </div> </modal> <modal v-model=modal_show2 title=对战邀请 @on-ok=btn_ok @on-cancel=btn_cancel> 用户昵称为 {{inviteName}} 的用户想要挑战你！ </modal> <div style=margin-top:20px> <h3 style=display:inline>您的昵称为：{{nick}}</h3> <i-button type=ghost style=margin-left:8px @click=modifyNick>修改昵称</i-button> </div> <div v-show=invite_able style=width:auto> <i-select v-model=challengeId style=width:180px;margin-top:10px :filterable=true> <i-option v-for=\"item in onlineList\" :value=item.socketId :label=item.nick :key=item :disabled=!item.gameState> <span>{{ item.nick }}</span> <span v-if=item.gameState style=float:right;color:#59cc6b>在线可撩</span> <span v-else style=float:right;color:#cc4949>对局中</span> </i-option> </i-select> <i-button type=primary :loading=loading style=margin-left:5px;margin-top:10px @click=inviteGame> <span v-if=!loading>邀请对决</span> <span v-else>等待对方接受...</span> </i-button> <i-button v-if=loading type=primary style=margin-left:5px;margin-top:10px @click=\"loading = false\"> 取消 </i-button> </div> <modal v-model=modal_show5 :closable=false :mask-closable=false style=text-align:center> <p v-if=isGameWin style=font-size:18px>您成功打败了对手！</p> <p v-if=!isGameWin style=font-size:18px>很可惜，您输了！</p> <div slot=footer> <i-button type=primary size=large long @click=\"modal_show5 = false\">确定</i-button> </div> </modal> <div v-show=gameStart style=margin-top:10px;text-align:center> <modal v-model=modal_show4 title=请选择 @on-ok=btn_ok_startGame> <span style=margin-left:30px>对方先下</span> <i-switch v-model=isAfter></i-switch> </modal> <modal v-model=modal_show6 @on-ok=btn_ok_forgiveChess> <p style=font-size:18px>悔棋需要征求对手的同意，继续？</p> </modal> <modal v-model=modal_show7 @on-ok=btn_agree_forgiveChess @on-cancel=btn_reject_forgiveChess> <p style=font-size:18px>对方请求悔棋，是否同意？</p> </modal> <modal v-model=modal_show8 @on-ok=btn_surrender> <p style=font-size:18px>确定要认输吗？</p> </modal> <i-button v-if=isInviteUser type=primary :disabled=btn_start_able style=margin-top:7px;margin-right:5px @click=\"modal_show4 = true\"> {{button_start}} </i-button> <i-button v-if=turnMsgShow type=primary :disabled=forgiveAble style=margin-top:7px;margin-right:5px @click=\"modal_show6 = true\"> 悔棋 </i-button> <i-button v-if=turnMsgShow type=primary style=margin-top:7px @click=\"modal_show8 = true\"> 认输 </i-button> <div v-show=turnMsgShow style=\"width:200px;margin:10px auto\"> <alert style=width:200px v-if=myTurn>轮到您下棋</alert> <alert style=width:200px v-else>等待对方下棋</alert> </div> <div id=canvas_container> <canvas id=canvasPlay> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> </div> ";
 
 /***/ }),
 /* 60 */
@@ -48337,6 +48337,7 @@ class PlayChess {
                     t.oldY = j;
                     t.chessBoard[i][j] = newChessBoard[i][j];
                     t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
+                    // t.chessBoardList.push(t.chessBoard.slice()); 不行
                     console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
                 }
             }
@@ -48378,7 +48379,7 @@ class PlayChess {
                 t.chessBoard[i][j] = 1;
             }
             t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
-            // t.chessBoardList.push(t.chessBoard.slice());
+            // t.chessBoardList.push(t.chessBoard.slice()); 不行
             console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
             if (t.forgiveAble) {
                 t.forgiveAble = false;
@@ -48536,11 +48537,11 @@ class PlayChess {
         }
         else {
             t.chessBoardList.pop();
-            // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+            console.log("chessBoardList推出：" + JSON.stringify(t.chessBoardList));
             t.chessBoardList.pop();
-            // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+            console.log("chessBoardList推出：" + JSON.stringify(t.chessBoardList));
             if (t.chessBoardList.length != 0) {
-                // console.log("chessBoardList末尾："+JSON.stringify(t.chessBoardList[t.chessBoardList.length-1]));
+                console.log("chessBoardList末尾：" + JSON.stringify(t.chessBoardList[t.chessBoardList.length - 1]));
                 // t.chessBoard = t.chessBoardList[t.chessBoardList.length-1]; 不知道为什么赋值无效
                 for (let i = 0; i < 15; i++) {
                     for (let j = 0; j < 15; j++) {
@@ -48574,7 +48575,7 @@ class PlayChess {
                 t.oldX = 0;
                 t.oldY = 0;
             }
-            // console.log("chessBoard更新："+JSON.stringify(t.chessBoard));
+            console.log("chessBoard更新：" + JSON.stringify(t.chessBoard));
         }
         t.notice_success("悔棋成功！");
         if (isSubmitUser) {
