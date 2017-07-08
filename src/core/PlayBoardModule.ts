@@ -103,6 +103,7 @@ export class PlayChess{
           t.oldY = j;
           t.chessBoard[i][j] = newChessBoard[i][j];
           t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
+          // t.chessBoardList.push(t.chessBoard.slice()); 不行
           console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
 
         }
@@ -151,7 +152,7 @@ export class PlayChess{
       }
 
       t.chessBoardList.push(JSON.parse(JSON.stringify(t.chessBoard)));
-      // t.chessBoardList.push(t.chessBoard.slice());
+      // t.chessBoardList.push(t.chessBoard.slice()); 不行
 
       console.log("chessBoardList:" + JSON.stringify(t.chessBoardList));
 
@@ -317,13 +318,13 @@ export class PlayChess{
       }
     }else {
       t.chessBoardList.pop();
-      // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+      console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
       t.chessBoardList.pop();
-      // console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
+      console.log("chessBoardList推出："+JSON.stringify(t.chessBoardList));
 
 
       if (t.chessBoardList.length != 0){
-        // console.log("chessBoardList末尾："+JSON.stringify(t.chessBoardList[t.chessBoardList.length-1]));
+        console.log("chessBoardList末尾："+JSON.stringify(t.chessBoardList[t.chessBoardList.length-1]));
         // t.chessBoard = t.chessBoardList[t.chessBoardList.length-1]; 不知道为什么赋值无效
 
         for (let i = 0; i < 15; i++) {
@@ -355,7 +356,7 @@ export class PlayChess{
         t.oldX = 0;
         t.oldY = 0;
       }
-      // console.log("chessBoard更新："+JSON.stringify(t.chessBoard));
+      console.log("chessBoard更新："+JSON.stringify(t.chessBoard));
     }
 
     t.notice_success("悔棋成功！");

@@ -1,5 +1,10 @@
 #chess {
   text-align: center;
+  margin-top: 15px;
+}
+
+#canvas_container {
+  overflow: scroll;
 }
 
 #canvas {
