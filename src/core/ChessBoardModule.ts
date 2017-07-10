@@ -29,28 +29,28 @@ export module ChessBoardModule {
     isBlack: boolean;
 
     /**
-     * 黑子外围泛色
+     * 黑子内围泛色
      * @type {string}
      */
     blackPieceInColor: string = "#636766";
 
     /**
-     * 黑子内围泛色
+     * 黑子外围泛色
      * @type {string}
      */
     blackPieceOutColor: string = "#0A0A0A";
 
     /**
-     * 白子外围泛色
+     * 白子内围泛色
      * @type {string}
      */
     whitePieceInColor: string = "#F9F9F9";
 
     /**
-     * 白子内围泛色
+     * 白子外围泛色
      * @type {string}
      */
-    whitePieceOutColor: string = "#D1D1D1";
+    whitePieceOutColor: string = "#d0d0d0";
 
     /**
      * 棋子半径
