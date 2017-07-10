@@ -25,3 +25,11 @@
 
 > vue2+vue-router2+iview+socket.io+webpack+nodejs+express+typescript
 
+### 使用
+```
+cnpm install
+//debug
+npm run dev
+//product
+npm run build
+```
