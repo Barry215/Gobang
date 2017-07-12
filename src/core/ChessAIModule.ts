@@ -247,6 +247,9 @@ export module ChessAIModule {
     computerStep(chessBoard: number[][]): Coordinate {
       for (let i = 0; i < 15; i++){
         for (let j = 0; j < 15; j++){
+          if(this.t.chessBoard[i][j] == 0 && this.hasNeighbor(new Coordinate(i,j), this.t.chessBoard)) {
+
+          }
 
         }
       }
@@ -261,9 +264,10 @@ export module ChessAIModule {
     /**
      * 是否周围有棋子
      * @param coordinate
+     * @param chessBoard
      * @returns {boolean}
      */
-    hasNeighbor(coordinate: Coordinate): boolean{
+    hasNeighbor(coordinate: Coordinate, chessBoard: number[][]): boolean{
       let startX = coordinate.x - 2;
       let endX = coordinate.x + 2;
       let startY = coordinate.y - 2;
@@ -281,7 +285,7 @@ export module ChessAIModule {
           if(i == coordinate.x && j == coordinate.y) {
             continue;
           }
-          if(this.t.chessBoard[i][j] != 0) {
+          if(chessBoard[i][j] != 0) {
             return true;
           }
         }
@@ -292,18 +296,19 @@ export module ChessAIModule {
 
     /**
      * 评估棋面得分
+     * @param chessBoard
      * @returns {number}
      */
-    evaluate(): number {
+    evaluate(chessBoard: number[][]): number {
 
       let comMaxScore = 0;
       let humMaxScore = 0;
 
       for(let i = 0; i < 15; i++) {
         for(let j = 0; j < 15; j++) {
-          if(this.t.chessBoard[i][j] == 0) {
-            comMaxScore = Math.max(this.comScore(new Coordinate(i,j)), comMaxScore);
-            humMaxScore = Math.max(this.humScore(new Coordinate(i,j)), humMaxScore);
+          if(chessBoard[i][j] == 0 && this.hasNeighbor(new Coordinate(i,j), chessBoard)) {
+            comMaxScore = Math.max(this.chessScore(new Coordinate(i,j), true, chessBoard), comMaxScore);
+            humMaxScore = Math.max(this.chessScore(new Coordinate(i,j), false, chessBoard), humMaxScore);
           }
         }
       }
@@ -312,35 +317,115 @@ export module ChessAIModule {
     }
 
     /**
-     * 计算电脑在此下子的得分
+     * 计算在此下子的得分
      * @param coordinate
-     * @returns {number}
+     * @param isCom
+     * @param chessBoard
      */
-    comScore(coordinate: Coordinate): number{
+    chessScore(coordinate: Coordinate, isCom: boolean, chessBoard: number[][]): number{
+      const myDot = isCom ? 2 : 1;
+      const againDot = isCom ? 1 : 2;
       let count = 0;
-      let leftBlock = false;
-      let rightBlock = false;
       let sum = 0;
-      for (let i = 1; i < 5; i++){
-        if (this.t.chessBoard[coordinate.x-i][coordinate.y] == 2){
-          count++;
-        }else if (this.t.chessBoard[coordinate.x-i][coordinate.y] == 1) {
 
+      //横向
+      for (let i = 0; i < 5; i++) {
+        count = 0;
+        for (let j = i - 4; j <= i; j++) {
+          if (coordinate.x+j < 0 || coordinate.x+j > 14){
+              continue;
+          }
+          if (chessBoard[coordinate.x+j][coordinate.y] == againDot){
+              count = 0;
+              break;
+          }else if (chessBoard[coordinate.x+j][coordinate.y] == myDot){
+              count++;
+          }
         }
+        sum += this.getScore(count);
       }
-      return 0;
+
+      //纵向
+      for (let i = 0; i < 5; i++) {
+        count = 0;
+        for (let j = i - 4; j <= i; j++) {
+          if (coordinate.y+j < 0 || coordinate.y+j > 14){
+            continue;
+          }
+          if (chessBoard[coordinate.x][coordinate.y+j] == againDot){
+            count = 0;
+            break;
+          }else if (chessBoard[coordinate.x][coordinate.y+j] == myDot){
+            count++;
+          }
+        }
+        sum += this.getScore(count);
+      }
+
+      // '/'向
+      for (let i = 0; i < 5; i++) {
+        count = 0;
+        for (let j = i - 4; j <= i; j++) {
+          if (coordinate.x+j < 0 || coordinate.x+j > 14 || coordinate.y+j < 0 || coordinate.y+j > 14){
+            continue;
+          }
+          if (chessBoard[coordinate.x+j][coordinate.y+j] == againDot){
+            count = 0;
+            break;
+          }else if (chessBoard[coordinate.x+j][coordinate.y+j] == myDot){
+            count++;
+          }
+        }
+        sum += this.getScore(count);
+      }
+
+      // '\'向
+      for (let i = 0; i < 5; i++) {
+        count = 0;
+        for (let j = i - 4; j <= i; j++) {
+          if (coordinate.x+j < 0 || coordinate.x+j > 14 || coordinate.y-j < 0 || coordinate.y-j > 14){
+            continue;
+          }
+          if (chessBoard[coordinate.x+j][coordinate.y-j] == againDot){
+            count = 0;
+            break;
+          }else if (chessBoard[coordinate.x+j][coordinate.y-j] == myDot){
+            count++;
+          }
+        }
+        sum += this.getScore(count);
+      }
+
+      return sum;
     }
 
     /**
-     * 计算人在此下子的得分
-     * @param coordinate
-     * @returns {number}
+     * 根据此赢法内的棋子数来返回分数
+     * @param count
      */
-    humScore(coordinate: Coordinate): number{
-
-      return 0;
+    getScore(count: number): number{
+      switch(count) {
+        case 0: return Score.NONE;
+        case 1: return Score.ONE;
+        case 2: return Score.TWO;
+        case 3: return Score.THREE;
+        case 4: return Score.FOUR;
+        default:return Score.NONE;
+      }
     }
 
+
+  }
+
+  /**
+   * 枚举分数类别
+   */
+  export enum Score{
+    NONE = 0,
+    ONE = 300,
+    TWO = 1000,
+    THREE = 3000,
+    FOUR = 30000
   }
 
 }
