@@ -1,5 +1,5 @@
 import * as Vue from 'vue';
-import {NavigationModule} from "../../../controller/NavigationModule";
+import {NavigationModule} from "../../../core/deprecated/controller/NavigationModule";
 import Location = NavigationModule.Location;
 import {GraphicsModule} from "../../../core/deprecated/GraphicsModule";
 import GraphicsCanvasImpl = GraphicsModule.GraphicsCanvasImpl;

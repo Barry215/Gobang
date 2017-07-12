@@ -224,4 +224,123 @@ export module ChessAIModule {
 
   }
 
+  export class ChessAIImpl2 implements ChessAI{
+
+    private t : any;
+
+    constructor(t: any) {
+      this.t = t;
+    }
+
+    isManWin(): boolean {
+      return undefined;
+    }
+
+    isComputerWin(): boolean {
+      return undefined;
+    }
+
+    handleManStep(x: number, y: number) {
+
+    }
+
+    computerStep(chessBoard: number[][]): Coordinate {
+      for (let i = 0; i < 15; i++){
+        for (let j = 0; j < 15; j++){
+
+        }
+      }
+
+      return undefined;
+    }
+
+    cleanWins(chessAI: ChessAIModule.ChessAI) {
+
+    }
+
+    /**
+     * 是否周围有棋子
+     * @param coordinate
+     * @returns {boolean}
+     */
+    hasNeighbor(coordinate: Coordinate): boolean{
+      let startX = coordinate.x - 2;
+      let endX = coordinate.x + 2;
+      let startY = coordinate.y - 2;
+      let endY = coordinate.y + 2;
+
+      for(let i = startX; i <= endX; i++) {
+        if(i < 0 || i > 14) {
+          continue;
+        }
+        for(let j = startY; j <= endY; j++) {
+          if(j < 0 || j > 14) {
+            continue;
+          }
+
+          if(i == coordinate.x && j == coordinate.y) {
+            continue;
+          }
+          if(this.t.chessBoard[i][j] != 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     * 评估棋面得分
+     * @returns {number}
+     */
+    evaluate(): number {
+
+      let comMaxScore = 0;
+      let humMaxScore = 0;
+
+      for(let i = 0; i < 15; i++) {
+        for(let j = 0; j < 15; j++) {
+          if(this.t.chessBoard[i][j] == 0) {
+            comMaxScore = Math.max(this.comScore(new Coordinate(i,j)), comMaxScore);
+            humMaxScore = Math.max(this.humScore(new Coordinate(i,j)), humMaxScore);
+          }
+        }
+      }
+
+      return comMaxScore - humMaxScore;
+    }
+
+    /**
+     * 计算电脑在此下子的得分
+     * @param coordinate
+     * @returns {number}
+     */
+    comScore(coordinate: Coordinate): number{
+      let count = 0;
+      let leftBlock = false;
+      let rightBlock = false;
+      let sum = 0;
+      for (let i = 1; i < 5; i++){
+        if (this.t.chessBoard[coordinate.x-i][coordinate.y] == 2){
+          count++;
+        }else if (this.t.chessBoard[coordinate.x-i][coordinate.y] == 1) {
+
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * 计算人在此下子的得分
+     * @param coordinate
+     * @returns {number}
+     */
+    humScore(coordinate: Coordinate): number{
+
+      return 0;
+    }
+
+  }
+
 }

@@ -50,15 +50,6 @@ export default Vue.extend({
       }
       t.chess.initClick(t);
     }
-    // ,
-    // changeFirst (status) {
-    //   let t: any = this;
-    //   t.isFirst = status;
-    // },
-    // changeBlack (status) {
-    //   let t: any = this;
-    //   t.isBlack = status;
-    // }
   },
   mounted(){
     let t: any = this;
