@@ -374,8 +374,6 @@ export module ChessAIModule {
      * @returns {boolean}
      */
     hasNeighbor(coordinate: Coordinate, chessBoard: number[][]): boolean{
-      let startTime = new Date().getTime();
-
 
       let startX = coordinate.x - 2;
       let endX = coordinate.x + 2;
@@ -395,14 +393,12 @@ export module ChessAIModule {
             continue;
           }
           if(chessBoard[i][j] != 0) {
-            console.log("hasNeighbor:"+(new Date().getTime()-startTime)+", value = true");
 
             return true;
           }
         }
       }
 
-      console.log("hasNeighbor:"+(new Date().getTime()-startTime)+", value = false");
       return false;
     }
 
