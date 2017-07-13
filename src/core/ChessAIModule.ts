@@ -11,12 +11,12 @@ export module ChessAIModule {
     /**
      * 判断是否玩家获胜
      */
-    isManWin():boolean;
+    isManWin(chessBoard: number[][]):boolean;
 
     /**
      * 判断是否电脑获胜
      */
-    isComputerWin():boolean;
+    isComputerWin(chessBoard: number[][]):boolean;
 
     /**
      * 处理玩家落子结果
@@ -194,7 +194,7 @@ export module ChessAIModule {
       return new Coordinate(u,v);
     }
 
-    isManWin():boolean {
+    isManWin(chessBoard: number[][]):boolean {
       for (let k = 0; k < this.counts; k++) {
         if (this.manWins[k] == 5){
           return true;
@@ -203,7 +203,7 @@ export module ChessAIModule {
       return false;
     }
 
-    isComputerWin():boolean {
+    isComputerWin(chessBoard: number[][]):boolean {
       for (let k = 0; k < this.counts; k++) {
         if (this.computerWins[k] == 5){
           return true;
@@ -226,18 +226,12 @@ export module ChessAIModule {
 
   export class ChessAIImpl2 implements ChessAI{
 
-    private t : any;
-
-    constructor(t: any) {
-      this.t = t;
+    isManWin(chessBoard: number[][]): boolean {
+      return this.isGameOver(chessBoard) == 1;
     }
 
-    isManWin(): boolean {
-      return undefined;
-    }
-
-    isComputerWin(): boolean {
-      return undefined;
+    isComputerWin(chessBoard: number[][]): boolean {
+      return this.isGameOver(chessBoard) == 2;
     }
 
     handleManStep(x: number, y: number) {
@@ -245,16 +239,128 @@ export module ChessAIModule {
     }
 
     computerStep(chessBoard: number[][]): Coordinate {
+      let startTime = new Date().getTime();
+
+      let historyScoreMore = -100000;
+      let chessBoardScoreMax = -100000;
+      let winStep = 10;
+      let perfectCoordinate = []; //0:x,1:y
+      let normalCoordinate = []; //0:x,1:y
+      let winCoordinate = []; //0:x,1:y
+      let lastChessBoardScore = this.evaluate(chessBoard);
+
       for (let i = 0; i < 15; i++){
         for (let j = 0; j < 15; j++){
-          if(this.t.chessBoard[i][j] == 0 && this.hasNeighbor(new Coordinate(i,j), this.t.chessBoard)) {
+          if(chessBoard[i][j] == 0 && this.hasNeighbor(new Coordinate(i,j), chessBoard)) {
+            let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+            chessBoardNext[i][j] = 2;
 
+            //如果五子连珠
+            if (this.isGameOver(chessBoardNext) == 2){
+              console.log("computerStep:"+(new Date().getTime()-startTime));
+              return new Coordinate(i,j);
+            }
+
+            let chessBoardScore = this.evaluate(chessBoardNext);
+            //当前局面哪个位置得分最高
+            if (chessBoardScore > chessBoardScoreMax){
+              chessBoardScoreMax = chessBoardScore;
+              normalCoordinate[0] = i;
+              normalCoordinate[1] = j;
+            }
+            //剪枝，当前分数要大于玩家下后的棋面分数
+            if (lastChessBoardScore <= chessBoardScore){
+              //选出历史分数中最大的那一步
+
+              let dfsResult = this.dfsChessBoard(1,chessBoardNext,chessBoardScore,false);
+
+              if (dfsResult.existGameOver == 1){
+                // continue;
+              }else if (dfsResult.existGameOver == 2){
+                if (dfsResult.winStep < winStep){
+                  winStep = dfsResult.winStep;
+                  winCoordinate[0] = i;
+                  winCoordinate[1] = j;
+                }
+              }else {
+                if (dfsResult.historyScore > historyScoreMore){
+                  perfectCoordinate[0] = i;
+                  perfectCoordinate[1] = j;
+                  historyScoreMore = dfsResult.historyScore;
+                }
+              }
+            }
           }
-
         }
       }
 
-      return undefined;
+      console.log("computerStep:"+(new Date().getTime()-startTime));
+
+      if (winStep == 10){
+        if (historyScoreMore == -100000){
+          return new Coordinate(normalCoordinate[0],normalCoordinate[1]);
+        }else {
+          return new Coordinate(perfectCoordinate[0],perfectCoordinate[1]);
+        }
+      }else {
+        return new Coordinate(winCoordinate[0],winCoordinate[1]);
+      }
+    }
+
+    /**
+     * 综合分数为电脑得分 - 玩家得分
+     * 深度优先预测未来棋子得分,电脑下的综合分数不能比上盘玩家下的低，玩家下的综合分数不能比电脑下的高
+     * @param depth 深度
+     * @param chessBoard 上一层棋盘
+     * @param lastChessBoardScore 上一层的得分
+     * @param isMax 是否当前是max层 这是博弈树极大值极小值的术语，max指电脑层
+     */
+    dfsChessBoard(depth: number, chessBoard: number[][], lastChessBoardScore: number, isMax: boolean): dfsResult{
+      let startTime = new Date().getTime();
+
+      const myDot = isMax ? 2 : 1;
+
+      let chessBoardScoreMin = 100000;
+
+      for (let i = 0; i < 15; i++){
+        for (let j = 0; j < 15; j++){
+          if(chessBoard[i][j] == 0 && this.hasNeighbor(new Coordinate(i,j), chessBoard)) {
+            let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+            chessBoardNext[i][j] = myDot;
+            //如果五子连珠
+            let isOver = this.isGameOver(chessBoardNext);
+            if (isOver == 2){
+              console.log("dfsChessBoard:"+(new Date().getTime()-startTime));
+
+              return new dfsResult(0,2,4-depth);
+            }else if (isOver == 1){
+              console.log("dfsChessBoard:"+(new Date().getTime()-startTime));
+
+              return new dfsResult(0,1,4-depth);
+            }
+
+            let chessBoardScore = this.evaluate(chessBoardNext);
+            if (isMax && (lastChessBoardScore <= chessBoardScore) || !isMax && (lastChessBoardScore >= chessBoardScore)){
+              if (depth == 1){
+                if (chessBoardScore < chessBoardScoreMin){
+                  chessBoardScoreMin = chessBoardScore;
+                }
+              }else {
+                let dfsResult = this.dfsChessBoard(depth-1,chessBoardNext,chessBoardScore,!isMax);
+                if (dfsResult.existGameOver != 0){
+                  return dfsResult;
+                }
+                if (dfsResult.historyScore < chessBoardScoreMin){
+                  chessBoardScoreMin = dfsResult.historyScore;
+                }
+              }
+            }
+
+          }
+        }
+      }
+      console.log("dfsChessBoard:"+(new Date().getTime()-startTime)+", chessBoardScoreMin" + chessBoardScoreMin);
+      return new dfsResult(chessBoardScoreMin,0,0);
     }
 
     cleanWins(chessAI: ChessAIModule.ChessAI) {
@@ -268,6 +374,9 @@ export module ChessAIModule {
      * @returns {boolean}
      */
     hasNeighbor(coordinate: Coordinate, chessBoard: number[][]): boolean{
+      let startTime = new Date().getTime();
+
+
       let startX = coordinate.x - 2;
       let endX = coordinate.x + 2;
       let startY = coordinate.y - 2;
@@ -286,20 +395,24 @@ export module ChessAIModule {
             continue;
           }
           if(chessBoard[i][j] != 0) {
+            console.log("hasNeighbor:"+(new Date().getTime()-startTime)+", value = true");
+
             return true;
           }
         }
       }
 
+      console.log("hasNeighbor:"+(new Date().getTime()-startTime)+", value = false");
       return false;
     }
 
     /**
-     * 评估棋面得分
+     * 评估棋面得分, 局势评分也可以根据电脑所有子得分的相加-玩家所有子得分的相加
      * @param chessBoard
      * @returns {number}
      */
     evaluate(chessBoard: number[][]): number {
+      let startTime = new Date().getTime();
 
       let comMaxScore = 0;
       let humMaxScore = 0;
@@ -312,8 +425,102 @@ export module ChessAIModule {
           }
         }
       }
+      console.log("evaluate:"+(new Date().getTime()-startTime)+", comMaxScore:"+comMaxScore+", humMaxScore:"+humMaxScore+", score:"+(comMaxScore - humMaxScore));
 
       return comMaxScore - humMaxScore;
+    }
+
+    /**
+     * 是否游戏结束 0:未，1:玩家赢，2:电脑赢
+     * @param chessBoard
+     * @returns {number}
+     */
+    isGameOver(chessBoard: number[][]): number{
+
+
+      let count = 0;
+
+      // 纵向90°的五子判断
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 11; j++) {
+          count = 0;
+          for (let k = 0; k < 5; k++) {
+            if (chessBoard[i][j + k] == 0){
+              count = 0;
+              break;
+            }else {
+              count += chessBoard[i][j + k];
+            }
+          }
+          if (count == 5){
+            return 1;
+          }else if (count == 10){
+            return 2;
+          }
+        }
+      }
+
+      // 横向0°的五子判断
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 11; j++) {
+          count = 0;
+          for (let k = 0; k < 5; k++) {
+            if (chessBoard[j + k][i] == 0){
+              count = 0;
+              break;
+            }else {
+              count += chessBoard[j + k][i];
+            }
+          }
+          if (count == 5){
+            return 1;
+          }else if (count == 10){
+            return 2;
+          }
+        }
+      }
+
+      // 斜向135°的五子判断'\'方向
+      for (let i = 0; i < 11; i++) {
+        for (let j = 0; j < 11; j++) {
+          count = 0;
+          for (let k = 0; k < 5; k++) {
+            if (chessBoard[i + k][j + k] == 0){
+              count = 0;
+              break;
+            }else {
+              count += chessBoard[i + k][j + k];
+            }
+          }
+          if (count == 5){
+            return 1;
+          }else if (count == 10){
+            return 2;
+          }
+        }
+      }
+
+      // 斜向45°的五子判断'/'方向
+      for (let i = 0; i < 11; i++) {
+        for (let j = 14; j > 3; j--) {
+          count = 0;
+          for (let k = 0; k < 5; k++) {
+            if (chessBoard[i + k][j - k] == 0){
+              count = 0;
+              break;
+            }else {
+              count += chessBoard[i + k][j - k];
+            }
+          }
+          if (count == 5){
+            return 1;
+          }else if (count == 10){
+            return 2;
+          }
+        }
+      }
+
+      return 0;
     }
 
     /**
@@ -323,6 +530,7 @@ export module ChessAIModule {
      * @param chessBoard
      */
     chessScore(coordinate: Coordinate, isCom: boolean, chessBoard: number[][]): number{
+
       const myDot = isCom ? 2 : 1;
       const againDot = isCom ? 1 : 2;
       let count = 0;
@@ -414,7 +622,6 @@ export module ChessAIModule {
       }
     }
 
-
   }
 
   /**
@@ -422,10 +629,24 @@ export module ChessAIModule {
    */
   export enum Score{
     NONE = 0,
-    ONE = 300,
-    TWO = 1000,
-    THREE = 3000,
-    FOUR = 30000
+    ONE = 3,
+    TWO = 10,
+    THREE = 50,
+    FOUR = 500
+  }
+
+  export class dfsResult {
+    historyScore : number;
+    //0:未，1:玩家赢，2:电脑赢
+    existGameOver : number;
+    //往下第几步会赢
+    winStep : number;
+
+    constructor(historyScore:number, existGameOver:number, winStep:number){
+      this.historyScore = historyScore;
+      this.existGameOver = existGameOver;
+      this.winStep = winStep;
+    }
   }
 
 }

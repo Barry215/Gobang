@@ -172,12 +172,11 @@ export module ChessBoardModule {
         t.chessBoard[i][j] = 1;
 
         t.chessAIImpl.handleManStep(i,j);
-        if (t.chessAIImpl.isManWin()){
+        if (t.chessAIImpl.isManWin(t.chessBoard)){
           that.handleGameOver(t);
           window.alert("恭喜您打败了阿尔法狗!");
           return;
         }
-
 
         let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
         that.drawChessPiece(new Piece(coordinate, !t.isBlack));
@@ -185,7 +184,7 @@ export module ChessBoardModule {
         t.chessBoard[coordinate.x][coordinate.y] = 2;
         t.yourTurn = true;
 
-        if (t.chessAIImpl.isComputerWin()){
+        if (t.chessAIImpl.isComputerWin(t.chessBoard)){
           that.handleGameOver(t);
           window.alert("向人工智能低头吧!");
         }
