@@ -16,7 +16,8 @@ export default Vue.extend({
       yourTurn : false,
       gameOver : false,
       modal_show: false,
-      button_text: "开始"
+      button_text: "开始",
+      whichComputer : false
     }
   },
   computed : {
@@ -35,7 +36,12 @@ export default Vue.extend({
       return chessBoard;
     },
     chessAIImpl: function () {
-      return new ChessAIImpl2();
+      let t: any = this;
+      if (!t.whichComputer){
+        return new ChessAIImpl1();
+      }else {
+        return new ChessAIImpl2();
+      }
     }
   },
   methods: {
