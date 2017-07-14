@@ -3,8 +3,8 @@ import './gobang.css'
 import {ChessBoardModule} from "../../core/ChessBoardModule";
 import Chess = ChessBoardModule.Chess;
 import {ChessAIModule} from "../../core/ChessAIModule";
-import ChessAIImpl1 = ChessAIModule.ChessAIImpl1;
-import ChessAIImpl2 = ChessAIModule.ChessAIImpl2;
+import {ChessAIImpl1} from "../../core/ChessAIImpl1";
+import {ChessAIImpl2} from "../../core/ChessAIImpl2";
 
 export default Vue.extend({
   template: require('./gobang.html'),

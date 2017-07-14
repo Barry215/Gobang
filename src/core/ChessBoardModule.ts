@@ -1,9 +1,7 @@
-import {ChessAIModule} from "./ChessAIModule";
 /**
  * Created by frank on 17/6/20.
  */
 export module ChessBoardModule {
-  import ChessAIImpl1 = ChessAIModule.ChessAIImpl1;
   /**
    * 五子棋坐标
    */
