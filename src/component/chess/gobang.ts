@@ -2,9 +2,9 @@ import * as Vue from 'vue';
 import './gobang.css'
 import {ChessBoardModule} from "../../core/ChessBoardModule";
 import Chess = ChessBoardModule.Chess;
-import {ChessAIModule} from "../../core/ChessAIModule";
 import {ChessAIImpl1} from "../../core/ChessAIImpl1";
 import {ChessAIImpl2} from "../../core/ChessAIImpl2";
+import {ChessAIImpl3} from "../../core/ChessAIImpl3";
 
 export default Vue.extend({
   template: require('./gobang.html'),
@@ -40,7 +40,7 @@ export default Vue.extend({
       if (!t.whichComputer){
         return new ChessAIImpl1();
       }else {
-        return new ChessAIImpl2();
+        return new ChessAIImpl3();
       }
     }
   },
