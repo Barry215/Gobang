@@ -10818,7 +10818,7 @@ function localstorage() {
   } catch (e) {}
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 7 */
@@ -11053,7 +11053,7 @@ function localstorage() {
   } catch (e) {}
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 9 */
@@ -11309,6 +11309,208 @@ function updateLink(linkElement, obj) {
 
 /***/ }),
 /* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChessBoardModule; });
+/**
+ * Created by frank on 17/6/20.
+ */
+/**
+ * Created by frank on 17/6/20.
+ */ var ChessBoardModule;
+(function (ChessBoardModule) {
+    /**
+     * 五子棋坐标
+     */
+    class Coordinate {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    ChessBoardModule.Coordinate = Coordinate;
+    /**
+     * 五子棋棋子
+     */
+    class Piece {
+        constructor(coordinate, isBlack, radius, blackPieceInColor, blackPieceOutColor, whitePieceInColor, whitePieceOutColor) {
+            /**
+             * 黑子内围泛色
+             * @type {string}
+             */
+            this.blackPieceInColor = "#636766";
+            /**
+             * 黑子外围泛色
+             * @type {string}
+             */
+            this.blackPieceOutColor = "#0A0A0A";
+            /**
+             * 白子内围泛色
+             * @type {string}
+             */
+            this.whitePieceInColor = "#F9F9F9";
+            /**
+             * 白子外围泛色
+             * @type {string}
+             */
+            this.whitePieceOutColor = "#d0d0d0";
+            /**
+             * 棋子半径
+             * @type {number}
+             */
+            this.radius = 13;
+            this.coordinate = coordinate;
+            this.isBlack = isBlack;
+            if (radius) {
+                this.radius = radius;
+            }
+            if (blackPieceInColor) {
+                this.blackPieceInColor = blackPieceInColor;
+            }
+            if (blackPieceOutColor) {
+                this.blackPieceOutColor = blackPieceOutColor;
+            }
+            if (whitePieceInColor) {
+                this.whitePieceInColor = whitePieceInColor;
+            }
+            if (whitePieceOutColor) {
+                this.whitePieceOutColor = whitePieceOutColor;
+            }
+        }
+    }
+    ChessBoardModule.Piece = Piece;
+    /**
+     * 棋盘
+     */
+    class Chess {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.context2D = this.canvas.getContext('2d');
+        }
+        /**
+         * 棋盘初始化绘制
+         */
+        initBoard() {
+            for (let i = 0; i < 15; i++) {
+                //画竖线
+                this.context2D.beginPath();
+                this.context2D.moveTo(15 + i * 30, 15);
+                this.context2D.lineTo(15 + i * 30, this.canvas.height - 15);
+                this.context2D.strokeStyle = '#8a8a8a';
+                this.context2D.stroke();
+                //画直线
+                this.context2D.beginPath();
+                this.context2D.moveTo(15, 15 + i * 30);
+                this.context2D.lineTo(this.canvas.width - 15, 15 + i * 30);
+                this.context2D.strokeStyle = '#BFBFBF';
+                this.context2D.stroke();
+            }
+        }
+        /**
+         * 设置canvas大小
+         * @param height
+         * @param width
+         */
+        resize(height, width) {
+            this.canvas.setAttribute('width', String(width));
+            this.canvas.setAttribute('height', String(height));
+        }
+        /**
+         * 落子
+         * @param element
+         */
+        drawChessPiece(element) {
+            this.context2D.beginPath();
+            this.context2D.arc(15 + element.coordinate.x * 30, 15 + element.coordinate.y * 30, element.radius, 0, 2 * Math.PI);
+            let gradient = this.context2D.createRadialGradient(15 + element.coordinate.x * 30 + 2, 15 + element.coordinate.y * 30 - 2, element.radius, 15 + element.coordinate.x * 30 + 2, 15 + element.coordinate.y * 30 - 2, 0);
+            if (!element.isBlack) {
+                gradient.addColorStop(0, element.whitePieceOutColor);
+                gradient.addColorStop(1, element.whitePieceInColor);
+            }
+            else {
+                gradient.addColorStop(0, element.blackPieceOutColor);
+                gradient.addColorStop(1, element.blackPieceInColor);
+            }
+            this.context2D.fillStyle = gradient;
+            this.context2D.fill();
+        }
+        /**
+         * 初始化点击事件
+         * @param t
+         */
+        initClick(t) {
+            let that = this;
+            this.canvas.onclick = function (clickEvent) {
+                if (t.gameOver) {
+                    return;
+                }
+                if (!t.yourTurn) {
+                    return;
+                }
+                const x = clickEvent.offsetX;
+                const y = clickEvent.offsetY;
+                const i = Math.floor(x / 30);
+                const j = Math.floor(y / 30);
+                //判断是否已有子
+                if (t.chessBoard[i][j] != 0) {
+                    return;
+                }
+                that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
+                t.yourTurn = false;
+                t.chessBoard[i][j] = 1;
+                t.chessAIImpl.handleManStep(i, j);
+                if (t.chessAIImpl.isManWin(t.chessBoard)) {
+                    that.handleGameOver(t);
+                    window.alert("恭喜您打败了阿尔法狗!");
+                    return;
+                }
+                let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
+                that.drawChessPiece(new Piece(coordinate, !t.isBlack));
+                t.chessBoard[coordinate.x][coordinate.y] = 2;
+                t.yourTurn = true;
+                if (t.chessAIImpl.isComputerWin(t.chessBoard)) {
+                    that.handleGameOver(t);
+                    window.alert("向人工智能低头吧!");
+                }
+            };
+        }
+        /**
+         * 电脑下第一步
+         * @param t
+         */
+        computerFirstStep(t) {
+            this.drawChessPiece(new Piece(new Coordinate(7, 7), !t.isBlack));
+            t.chessBoard[7][7] = 2;
+            t.yourTurn = true;
+        }
+        /**
+         * 游戏结束
+         * @param t
+         */
+        handleGameOver(t) {
+            t.chessAIImpl.cleanWins(t.chessAIImpl);
+            t.gameOver = true;
+            t.btn_able = false;
+            t.button_text = "再来一局";
+        }
+        gameAgain(t) {
+            this.context2D.clearRect(0, 0, 450, 450);
+            this.initBoard();
+            for (let i = 0; i < 15; i++) {
+                for (let j = 0; j < 15; j++) {
+                    t.chessBoard[i][j] = 0;
+                }
+            }
+            t.gameOver = false;
+        }
+    }
+    ChessBoardModule.Chess = Chess;
+})(ChessBoardModule || (ChessBoardModule = {}));
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -11471,7 +11673,7 @@ Transport.prototype.onClose = function () {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// browser shim for xmlhttprequest module
@@ -11515,7 +11717,7 @@ module.exports = function (opts) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -11705,7 +11907,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -12111,206 +12313,6 @@ function error() {
 
 
 /***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChessBoardModule; });
-/**
- * Created by frank on 17/6/20.
- */
-var ChessBoardModule;
-(function (ChessBoardModule) {
-    /**
-     * 五子棋坐标
-     */
-    class Coordinate {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    ChessBoardModule.Coordinate = Coordinate;
-    /**
-     * 五子棋棋子
-     */
-    class Piece {
-        constructor(coordinate, isBlack, radius, blackPieceInColor, blackPieceOutColor, whitePieceInColor, whitePieceOutColor) {
-            /**
-             * 黑子外围泛色
-             * @type {string}
-             */
-            this.blackPieceInColor = "#636766";
-            /**
-             * 黑子内围泛色
-             * @type {string}
-             */
-            this.blackPieceOutColor = "#0A0A0A";
-            /**
-             * 白子外围泛色
-             * @type {string}
-             */
-            this.whitePieceInColor = "#F9F9F9";
-            /**
-             * 白子内围泛色
-             * @type {string}
-             */
-            this.whitePieceOutColor = "#D1D1D1";
-            /**
-             * 棋子半径
-             * @type {number}
-             */
-            this.radius = 13;
-            this.coordinate = coordinate;
-            this.isBlack = isBlack;
-            if (radius) {
-                this.radius = radius;
-            }
-            if (blackPieceInColor) {
-                this.blackPieceInColor = blackPieceInColor;
-            }
-            if (blackPieceOutColor) {
-                this.blackPieceOutColor = blackPieceOutColor;
-            }
-            if (whitePieceInColor) {
-                this.whitePieceInColor = whitePieceInColor;
-            }
-            if (whitePieceOutColor) {
-                this.whitePieceOutColor = whitePieceOutColor;
-            }
-        }
-    }
-    ChessBoardModule.Piece = Piece;
-    /**
-     * 棋盘
-     */
-    class Chess {
-        constructor(canvas) {
-            this.canvas = canvas;
-            this.context2D = this.canvas.getContext('2d');
-        }
-        /**
-         * 棋盘初始化绘制
-         */
-        initBoard() {
-            for (let i = 0; i < 15; i++) {
-                //画竖线
-                this.context2D.beginPath();
-                this.context2D.moveTo(15 + i * 30, 15);
-                this.context2D.lineTo(15 + i * 30, this.canvas.height - 15);
-                this.context2D.strokeStyle = '#8a8a8a';
-                this.context2D.stroke();
-                //画直线
-                this.context2D.beginPath();
-                this.context2D.moveTo(15, 15 + i * 30);
-                this.context2D.lineTo(this.canvas.width - 15, 15 + i * 30);
-                this.context2D.strokeStyle = '#BFBFBF';
-                this.context2D.stroke();
-            }
-        }
-        /**
-         * 设置canvas大小
-         * @param height
-         * @param width
-         */
-        resize(height, width) {
-            this.canvas.setAttribute('width', String(width));
-            this.canvas.setAttribute('height', String(height));
-        }
-        /**
-         * 落子
-         * @param element
-         */
-        drawChessPiece(element) {
-            this.context2D.beginPath();
-            this.context2D.arc(15 + element.coordinate.x * 30, 15 + element.coordinate.y * 30, element.radius, 0, 2 * Math.PI);
-            let gradient = this.context2D.createRadialGradient(15 + element.coordinate.x * 30 + 2, 15 + element.coordinate.y * 30 - 2, element.radius, 15 + element.coordinate.x * 30 + 2, 15 + element.coordinate.y * 30 - 2, 0);
-            if (!element.isBlack) {
-                gradient.addColorStop(0, element.whitePieceOutColor);
-                gradient.addColorStop(1, element.whitePieceInColor);
-            }
-            else {
-                gradient.addColorStop(0, element.blackPieceOutColor);
-                gradient.addColorStop(1, element.blackPieceInColor);
-            }
-            this.context2D.fillStyle = gradient;
-            this.context2D.fill();
-        }
-        /**
-         * 初始化点击事件
-         * @param t
-         */
-        initClick(t) {
-            let that = this;
-            this.canvas.onclick = function (clickEvent) {
-                if (t.gameOver) {
-                    return;
-                }
-                if (!t.yourTurn) {
-                    return;
-                }
-                const x = clickEvent.offsetX;
-                const y = clickEvent.offsetY;
-                const i = Math.floor(x / 30);
-                const j = Math.floor(y / 30);
-                //判断是否已有子
-                if (t.chessBoard[i][j] != 0) {
-                    return;
-                }
-                that.drawChessPiece(new Piece(new Coordinate(i, j), t.isBlack));
-                t.yourTurn = false;
-                t.chessBoard[i][j] = 1;
-                t.chessAIImpl.handleManStep(i, j);
-                if (t.chessAIImpl.isManWin()) {
-                    that.handleGameOver(t);
-                    window.alert("恭喜您打败了阿尔法狗!");
-                    return;
-                }
-                let coordinate = t.chessAIImpl.computerStep(t.chessBoard);
-                that.drawChessPiece(new Piece(coordinate, !t.isBlack));
-                t.chessBoard[coordinate.x][coordinate.y] = 2;
-                t.yourTurn = true;
-                if (t.chessAIImpl.isComputerWin()) {
-                    that.handleGameOver(t);
-                    window.alert("向人工智能低头吧!");
-                }
-            };
-        }
-        /**
-         * 电脑下第一步
-         * @param t
-         */
-        computerFirstStep(t) {
-            this.drawChessPiece(new Piece(new Coordinate(7, 7), !t.isBlack));
-            t.chessBoard[7][7] = 2;
-            t.yourTurn = true;
-        }
-        /**
-         * 游戏结束
-         * @param t
-         */
-        handleGameOver(t) {
-            t.chessAIImpl.cleanWins(t.chessAIImpl);
-            t.gameOver = true;
-            t.btn_able = false;
-            t.button_text = "再来一局";
-        }
-        gameAgain(t) {
-            this.context2D.clearRect(0, 0, 450, 450);
-            this.initBoard();
-            for (let i = 0; i < 15; i++) {
-                for (let j = 0; j < 15; j++) {
-                    t.chessBoard[i][j] = 0;
-                }
-            }
-            t.gameOver = false;
-        }
-    }
-    ChessBoardModule.Chess = Chess;
-})(ChessBoardModule || (ChessBoardModule = {}));
-
-
-/***/ }),
 /* 15 */
 /***/ (function(module, exports) {
 
@@ -12347,7 +12349,7 @@ module.exports = function(obj, fn){
  * Module dependencies
  */
 
-var XMLHttpRequest = __webpack_require__(11);
+var XMLHttpRequest = __webpack_require__(12);
 var XHR = __webpack_require__(45);
 var JSONP = __webpack_require__(44);
 var websocket = __webpack_require__(46);
@@ -12407,7 +12409,7 @@ function polling (opts) {
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(10);
+var Transport = __webpack_require__(11);
 var parseqs = __webpack_require__(7);
 var parser = __webpack_require__(3);
 var inherit = __webpack_require__(4);
@@ -12425,7 +12427,7 @@ module.exports = Polling;
  */
 
 var hasXHR2 = (function () {
-  var XMLHttpRequest = __webpack_require__(11);
+  var XMLHttpRequest = __webpack_require__(12);
   var xhr = new XMLHttpRequest({ xdomain: false });
   return null != xhr.responseType;
 })();
@@ -12797,7 +12799,7 @@ module.exports = function parseuri(str) {
 var eio = __webpack_require__(41);
 var Socket = __webpack_require__(24);
 var Emitter = __webpack_require__(2);
-var parser = __webpack_require__(13);
+var parser = __webpack_require__(14);
 var on = __webpack_require__(23);
 var bind = __webpack_require__(15);
 var debug = __webpack_require__(8)('socket.io-client:manager');
@@ -13403,7 +13405,7 @@ function on (obj, ev, fn) {
  * Module dependencies.
  */
 
-var parser = __webpack_require__(13);
+var parser = __webpack_require__(14);
 var Emitter = __webpack_require__(2);
 var toArray = __webpack_require__(73);
 var on = __webpack_require__(23);
@@ -43937,7 +43939,7 @@ Socket.protocol = parser.protocol; // this is an int
  */
 
 Socket.Socket = Socket;
-Socket.Transport = __webpack_require__(10);
+Socket.Transport = __webpack_require__(11);
 Socket.transports = __webpack_require__(16);
 Socket.parser = __webpack_require__(3);
 
@@ -44786,7 +44788,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
  * Module requirements.
  */
 
-var XMLHttpRequest = __webpack_require__(11);
+var XMLHttpRequest = __webpack_require__(12);
 var Polling = __webpack_require__(17);
 var Emitter = __webpack_require__(2);
 var inherit = __webpack_require__(4);
@@ -45206,7 +45208,7 @@ function unloadHandler () {
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(10);
+var Transport = __webpack_require__(11);
 var parser = __webpack_require__(3);
 var parseqs = __webpack_require__(7);
 var inherit = __webpack_require__(4);
@@ -45216,7 +45218,7 @@ var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 var NodeWebSocket;
 if (typeof window === 'undefined') {
   try {
-    NodeWebSocket = __webpack_require__(81);
+    NodeWebSocket = __webpack_require__(82);
   } catch (e) { }
 }
 
@@ -46141,7 +46143,7 @@ module.exports = Object.keys || function keys (obj){
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(80)(module), __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(81)(module), __webpack_require__(0)))
 
 /***/ }),
 /* 51 */
@@ -46205,7 +46207,7 @@ module.exports = "<div> <i-menu mode=horizontal theme=primary active-name=1> <me
 /* 57 */
 /***/ (function(module, exports) {
 
-module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:30px>玩家先下</span> <i-switch v-model=isFirst></i-switch> <span style=margin-left:30px>执黑棋</span> <i-switch v-model=isBlack></i-switch> </modal> <div id=chess> <i-button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</i-button> <div id=canvas_container> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> </div> ";
+module.exports = "<div> <modal v-model=modal_show title=请选择 @on-ok=ok> <span style=margin-left:10px>玩家先下</span> <i-switch v-model=isFirst></i-switch> <span style=margin-left:10px>执黑棋</span> <i-switch v-model=isBlack></i-switch> <span style=margin-left:10px>难</span> <i-switch v-model=whichComputer></i-switch> </modal> <div id=chess> <i-button id=btn_start type=primary :disabled=btn_able @click=\"modal_show = true\">{{button_text}}</i-button> <div id=canvas_container> <canvas id=canvas> 您的浏览器不支持canvas动画效果 </canvas> </div> </div> </div> ";
 
 /***/ }),
 /* 58 */
@@ -46267,7 +46269,7 @@ module.exports = function parsejson(data) {
  */
 
 var url = __webpack_require__(62);
-var parser = __webpack_require__(13);
+var parser = __webpack_require__(14);
 var Manager = __webpack_require__(22);
 var debug = __webpack_require__(8)('socket.io-client');
 
@@ -47143,7 +47145,7 @@ function localstorage() {
   } catch (e) {}
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 67 */
@@ -47671,14 +47673,15 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue__({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__gobang_css__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__gobang_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__gobang_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_ChessBoardModule__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__ = __webpack_require__(78);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_ChessBoardModule__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_ChessAIImpl1__ = __webpack_require__(78);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_ChessAIImpl3__ = __webpack_require__(79);
 
 
 
 var Chess = __WEBPACK_IMPORTED_MODULE_2__core_ChessBoardModule__["a" /* ChessBoardModule */].Chess;
 
-var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* ChessAIModule */].ChessAIImpl1;
+
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_vue__["extend"]({
     template: __webpack_require__(57),
     data() {
@@ -47689,7 +47692,8 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             yourTurn: false,
             gameOver: false,
             modal_show: false,
-            button_text: "开始"
+            button_text: "开始",
+            whichComputer: false
         };
     },
     computed: {
@@ -47708,7 +47712,13 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             return chessBoard;
         },
         chessAIImpl: function () {
-            return new ChessAIImpl1();
+            let t = this;
+            if (!t.whichComputer) {
+                return new __WEBPACK_IMPORTED_MODULE_3__core_ChessAIImpl1__["a" /* ChessAIImpl1 */]();
+            }
+            else {
+                return new __WEBPACK_IMPORTED_MODULE_4__core_ChessAIImpl3__["a" /* ChessAIImpl3 */]();
+            }
         }
     },
     methods: {
@@ -47724,15 +47734,6 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
             }
             t.chess.initClick(t);
         }
-        // ,
-        // changeFirst (status) {
-        //   let t: any = this;
-        //   t.isFirst = status;
-        // },
-        // changeBlack (status) {
-        //   let t: any = this;
-        //   t.isBlack = status;
-        // }
     },
     mounted() {
         let t = this;
@@ -47782,7 +47783,7 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_socket_io_client__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__player_css__ = __webpack_require__(72);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__player_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__player_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_PlayBoardModule__ = __webpack_require__(79);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_PlayBoardModule__ = __webpack_require__(80);
 
 
 
@@ -48055,189 +48056,186 @@ var ChessAIImpl1 = __WEBPACK_IMPORTED_MODULE_3__core_ChessAIModule__["a" /* Ches
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChessAIModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__ = __webpack_require__(10);
 
-var ChessAIModule;
-(function (ChessAIModule) {
-    var Coordinate = __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__["a" /* ChessBoardModule */].Coordinate;
-    /**
-     * 五子棋算法实现一
-     */
-    class ChessAIImpl1 {
-        constructor() {
-            this.counts = 0;
-            this.wins = [];
-            this.manWins = [];
-            this.computerWins = [];
-            //初始化赢法数组
-            for (let i = 0; i < 15; i++) {
-                this.wins[i] = [];
-                for (let j = 0; j < 15; j++) {
-                    this.wins[i][j] = [];
-                }
-            }
-            // 纵向90°的赢法计数
-            for (let i = 0; i < 15; i++) {
-                for (let j = 0; j < 11; j++) {
-                    for (let k = 0; k < 5; k++) {
-                        this.wins[i][j + k][this.counts] = 1;
-                    }
-                    this.counts++;
-                }
-            }
-            // 横向0°的赢法计数
-            for (let i = 0; i < 15; i++) {
-                for (let j = 0; j < 11; j++) {
-                    for (let k = 0; k < 5; k++) {
-                        this.wins[j + k][i][this.counts] = 1;
-                    }
-                    this.counts++;
-                }
-            }
-            // 斜向135°的赢法计数
-            for (let i = 0; i < 11; i++) {
-                for (let j = 0; j < 11; j++) {
-                    for (let k = 0; k < 5; k++) {
-                        this.wins[i + k][j + k][this.counts] = 1;
-                    }
-                    this.counts++;
-                }
-            }
-            // 斜向45°的赢法计数
-            for (let i = 0; i < 11; i++) {
-                for (let j = 14; j > 3; j--) {
-                    for (let k = 0; k < 5; k++) {
-                        this.wins[i + k][j - k][this.counts] = 1;
-                    }
-                    this.counts++;
-                }
-            }
-            // 初始化用户和电脑的各种赢法得分(最高5分)
-            for (let i = 0; i < this.counts; i++) {
-                this.manWins[i] = 0;
-                this.computerWins[i] = 0;
+var Coordinate = __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__["a" /* ChessBoardModule */].Coordinate;
+/**
+ * 五子棋算法实现一
+ */
+class ChessAIImpl1 {
+    constructor() {
+        this.counts = 0;
+        this.wins = [];
+        this.manWins = [];
+        this.computerWins = [];
+        //初始化赢法数组
+        for (let i = 0; i < 15; i++) {
+            this.wins[i] = [];
+            for (let j = 0; j < 15; j++) {
+                this.wins[i][j] = [];
             }
         }
-        handleManStep(x, y) {
-            for (let k = 0; k < this.counts; k++) {
-                if (this.wins[x][y][k] == 1) {
-                    this.manWins[k]++;
-                    this.computerWins[k] = 6;
+        // 纵向90°的赢法计数
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 11; j++) {
+                for (let k = 0; k < 5; k++) {
+                    this.wins[i][j + k][this.counts] = 1;
                 }
+                this.counts++;
             }
         }
-        computerStep(chessBoard) {
-            let u = 0; // 电脑预落子的x位置
-            let v = 0; // 电脑预落子的y位置
-            let max = 0; // 最优位置的分数
-            let manScore = [];
-            let computerScore = [];
-            //初始化分数数组
-            for (let i = 0; i < 15; i++) {
-                manScore[i] = [];
-                computerScore[i] = [];
-                for (let j = 0; j < 15; j++) {
-                    manScore[i][j] = 0;
-                    computerScore[i][j] = 0;
+        // 横向0°的赢法计数
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 11; j++) {
+                for (let k = 0; k < 5; k++) {
+                    this.wins[j + k][i][this.counts] = 1;
                 }
+                this.counts++;
             }
-            for (let i = 0; i < 15; i++) {
-                for (let j = 0; j < 15; j++) {
-                    if (chessBoard[i][j] == 0) {
-                        for (let k = 0; k < this.counts; k++) {
-                            if (this.wins[i][j][k] == 1) {
-                                if (this.manWins[k] == 1) {
-                                    manScore[i][j] += 100;
-                                }
-                                else if (this.manWins[k] == 2) {
-                                    manScore[i][j] += 500;
-                                }
-                                else if (this.manWins[k] == 3) {
-                                    manScore[i][j] += 2500;
-                                }
-                                else if (this.manWins[k] == 4) {
-                                    manScore[i][j] += 10000;
-                                }
-                                if (this.computerWins[k] == 1) {
-                                    computerScore[i][j] += 300;
-                                }
-                                else if (this.computerWins[k] == 2) {
-                                    computerScore[i][j] += 1000;
-                                }
-                                else if (this.computerWins[k] == 3) {
-                                    computerScore[i][j] += 3000;
-                                }
-                                else if (this.computerWins[k] == 4) {
-                                    computerScore[i][j] += 30000;
-                                }
-                            }
-                        }
-                        // 如果玩家(i,j)处比目前最优的分数大，则落子在(i,j)处
-                        if (manScore[i][j] > max) {
-                            max = manScore[i][j];
-                            u = i;
-                            v = j;
-                        }
-                        else if (manScore[i][j] == max) {
-                            // 如果玩家(i,j)处和目前最优分数一样大，则比较电脑在该位置和预落子的位置的分数
-                            if (computerScore[i][j] > computerScore[u][v]) {
-                                u = i;
-                                v = j;
-                            }
-                        }
-                        // 如果电脑(i,j)处比目前最优的分数大，则落子在(i,j)处
-                        if (computerScore[i][j] > max) {
-                            max = computerScore[i][j];
-                            u = i;
-                            v = j;
-                        }
-                        else if (computerScore[i][j] == max) {
-                            // 如果电脑(i,j)处和目前最优分数一样大，则比较玩家在该位置和预落子的位置的分数
-                            if (manScore[i][j] > manScore[u][v]) {
-                                u = i;
-                                v = j;
-                            }
-                        }
-                    }
-                }
-            }
-            for (let k = 0; k < this.counts; k++) {
-                if (this.wins[u][v][k] == 1) {
-                    this.computerWins[k]++;
-                    this.manWins[k] = 6;
-                }
-            }
-            return new Coordinate(u, v);
         }
-        isManWin() {
-            for (let k = 0; k < this.counts; k++) {
-                if (this.manWins[k] == 5) {
-                    return true;
+        // 斜向135°的赢法计数
+        for (let i = 0; i < 11; i++) {
+            for (let j = 0; j < 11; j++) {
+                for (let k = 0; k < 5; k++) {
+                    this.wins[i + k][j + k][this.counts] = 1;
                 }
+                this.counts++;
             }
-            return false;
         }
-        isComputerWin() {
-            for (let k = 0; k < this.counts; k++) {
-                if (this.computerWins[k] == 5) {
-                    return true;
+        // 斜向45°的赢法计数
+        for (let i = 0; i < 11; i++) {
+            for (let j = 14; j > 3; j--) {
+                for (let k = 0; k < 5; k++) {
+                    this.wins[i + k][j - k][this.counts] = 1;
                 }
+                this.counts++;
             }
-            return false;
         }
-        /**
-         * 重置赢法数组
-         */
-        cleanWins(chessAI) {
-            for (let i = 0; i < this.counts; i++) {
-                chessAI.manWins[i] = 0;
-                chessAI.computerWins[i] = 0;
+        // 初始化用户和电脑的各种赢法得分(最高5分)
+        for (let i = 0; i < this.counts; i++) {
+            this.manWins[i] = 0;
+            this.computerWins[i] = 0;
+        }
+    }
+    handleManStep(x, y) {
+        for (let k = 0; k < this.counts; k++) {
+            if (this.wins[x][y][k] == 1) {
+                this.manWins[k]++;
+                this.computerWins[k] = 6;
             }
         }
     }
-    ChessAIModule.ChessAIImpl1 = ChessAIImpl1;
-})(ChessAIModule || (ChessAIModule = {}));
+    computerStep(chessBoard) {
+        let u = 0; // 电脑预落子的x位置
+        let v = 0; // 电脑预落子的y位置
+        let max = 0; // 最优位置的分数
+        let manScore = [];
+        let computerScore = [];
+        //初始化分数数组
+        for (let i = 0; i < 15; i++) {
+            manScore[i] = [];
+            computerScore[i] = [];
+            for (let j = 0; j < 15; j++) {
+                manScore[i][j] = 0;
+                computerScore[i][j] = 0;
+            }
+        }
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                if (chessBoard[i][j] == 0) {
+                    for (let k = 0; k < this.counts; k++) {
+                        if (this.wins[i][j][k] == 1) {
+                            if (this.manWins[k] == 1) {
+                                manScore[i][j] += 100;
+                            }
+                            else if (this.manWins[k] == 2) {
+                                manScore[i][j] += 500;
+                            }
+                            else if (this.manWins[k] == 3) {
+                                manScore[i][j] += 2500;
+                            }
+                            else if (this.manWins[k] == 4) {
+                                manScore[i][j] += 10000;
+                            }
+                            if (this.computerWins[k] == 1) {
+                                computerScore[i][j] += 300;
+                            }
+                            else if (this.computerWins[k] == 2) {
+                                computerScore[i][j] += 1000;
+                            }
+                            else if (this.computerWins[k] == 3) {
+                                computerScore[i][j] += 3000;
+                            }
+                            else if (this.computerWins[k] == 4) {
+                                computerScore[i][j] += 30000;
+                            }
+                        }
+                    }
+                    // 如果玩家(i,j)处比目前最优的分数大，则落子在(i,j)处
+                    if (manScore[i][j] > max) {
+                        max = manScore[i][j];
+                        u = i;
+                        v = j;
+                    }
+                    else if (manScore[i][j] == max) {
+                        // 如果玩家(i,j)处和目前最优分数一样大，则比较电脑在该位置和预落子的位置的分数
+                        if (computerScore[i][j] > computerScore[u][v]) {
+                            u = i;
+                            v = j;
+                        }
+                    }
+                    // 如果电脑(i,j)处比目前最优的分数大，则落子在(i,j)处
+                    if (computerScore[i][j] > max) {
+                        max = computerScore[i][j];
+                        u = i;
+                        v = j;
+                    }
+                    else if (computerScore[i][j] == max) {
+                        // 如果电脑(i,j)处和目前最优分数一样大，则比较玩家在该位置和预落子的位置的分数
+                        if (manScore[i][j] > manScore[u][v]) {
+                            u = i;
+                            v = j;
+                        }
+                    }
+                }
+            }
+        }
+        for (let k = 0; k < this.counts; k++) {
+            if (this.wins[u][v][k] == 1) {
+                this.computerWins[k]++;
+                this.manWins[k] = 6;
+            }
+        }
+        return new Coordinate(u, v);
+    }
+    isManWin(chessBoard) {
+        for (let k = 0; k < this.counts; k++) {
+            if (this.manWins[k] == 5) {
+                return true;
+            }
+        }
+        return false;
+    }
+    isComputerWin(chessBoard) {
+        for (let k = 0; k < this.counts; k++) {
+            if (this.computerWins[k] == 5) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * 重置赢法数组
+     */
+    cleanWins(chessAI) {
+        for (let i = 0; i < this.counts; i++) {
+            chessAI.manWins[i] = 0;
+            chessAI.computerWins[i] = 0;
+        }
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ChessAIImpl1;
+
 
 
 /***/ }),
@@ -48245,7 +48243,523 @@ var ChessAIModule;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__ = __webpack_require__(10);
+
+var Coordinate = __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__["a" /* ChessBoardModule */].Coordinate;
+class ChessAIImpl3 {
+    isManWin(chessBoard) {
+        return this.isGameOver(chessBoard) == 1;
+    }
+    isComputerWin(chessBoard) {
+        return this.isGameOver(chessBoard) == 2;
+    }
+    handleManStep(x, y) {
+    }
+    computerStep(chessBoard) {
+        let startTime = new Date().getTime();
+        // let winStep = 10;
+        // let winCoordinate = []; //0:x,1:y
+        let perfectCoordinate = []; //0:x,1:y
+        let futureScoreMost = null;
+        let evaluateScoreMost = null;
+        let lastChessBoardScore = this.evaluate(chessBoard, false);
+        //启发搜索
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                if (chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+                    let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+                    chessBoardNext[i][j] = 2;
+                    let chessBoardScore = this.evaluate(chessBoardNext, true);
+                    if (evaluateScoreMost != null) {
+                        if (chessBoardScore > evaluateScoreMost) {
+                            evaluateScoreMost = chessBoardScore;
+                            perfectCoordinate[0] = i;
+                            perfectCoordinate[1] = j;
+                        }
+                    }
+                    else {
+                        evaluateScoreMost = chessBoardScore;
+                        perfectCoordinate[0] = i;
+                        perfectCoordinate[1] = j;
+                    }
+                }
+            }
+        }
+        let chessBoardBest = JSON.parse(JSON.stringify(chessBoard));
+        chessBoardBest[perfectCoordinate[0]][perfectCoordinate[1]] = 2;
+        futureScoreMost = this.dfsChessBoard(1, chessBoardBest, evaluateScoreMost, null, false);
+        console.log("算出未来最佳值:" + futureScoreMost);
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                console.log("进入大循环:" + i + "," + j);
+                if (chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+                    console.log("第一层过滤:" + i + "," + j);
+                    let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+                    chessBoardNext[i][j] = 2;
+                    let chessBoardScore = this.evaluate(chessBoardNext, true);
+                    if (lastChessBoardScore == chessBoardScore) {
+                        continue;
+                    }
+                    console.log("第二层过滤:" + i + "," + j);
+                    //如果五子连珠
+                    if (this.isGameOver(chessBoardNext) == 2) {
+                        return new Coordinate(i, j);
+                    }
+                    let futureScore = this.dfsChessBoard(1, chessBoardNext, chessBoardScore, futureScoreMost, false);
+                    if (futureScore == null) {
+                        console.log("第三层过滤:" + i + "," + j);
+                        continue;
+                    }
+                    if (futureScoreMost == null) {
+                        futureScoreMost = futureScore;
+                        perfectCoordinate[0] = i;
+                        perfectCoordinate[1] = j;
+                        console.log("初始化futureScoreMost:" + futureScoreMost);
+                    }
+                    else {
+                        if (futureScore > futureScoreMost) {
+                            futureScoreMost = futureScore;
+                            perfectCoordinate[0] = i;
+                            perfectCoordinate[1] = j;
+                            console.log("更新futureScoreMost:" + futureScoreMost);
+                        }
+                    }
+                }
+            }
+        }
+        console.log("computerStep:" + (new Date().getTime() - startTime));
+        return new Coordinate(perfectCoordinate[0], perfectCoordinate[1]);
+    }
+    /**
+     * Max层要选择子节点中最大的，Min层要选择子节点中最小的
+     * @param depth 深度
+     * @param chessBoard 上一层棋盘
+     * @param lastChessBoardScore 上一层的棋面分
+     * @param otherChessBoardScoreMost 兄弟们的棋面最佳分
+     * @param isCom 是否在电脑层，电脑：min，玩家：max
+     */
+    dfsChessBoard(depth, chessBoard, lastChessBoardScore, otherChessBoardScoreMost, isCom) {
+        const myDot = isCom ? 2 : 1;
+        let chessBoardScoreMost = null;
+        let futureChessBoardScore = null;
+        let evaluateScoreMost = null;
+        let evaluateMaxCoordinate = [];
+        //启发搜索
+        if (depth != 1) {
+            for (let i = 0; i < 15; i++) {
+                for (let j = 0; j < 15; j++) {
+                    if (chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+                        let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+                        chessBoardNext[i][j] = myDot;
+                        let chessBoardScore = this.evaluate(chessBoardNext, isCom);
+                        if (evaluateScoreMost != null) {
+                            if (!isCom) {
+                                if (chessBoardScore < evaluateScoreMost) {
+                                    evaluateScoreMost = chessBoardScore;
+                                    evaluateMaxCoordinate[0] = i;
+                                    evaluateMaxCoordinate[1] = j;
+                                }
+                            }
+                            else {
+                                if (chessBoardScore > evaluateScoreMost) {
+                                    evaluateScoreMost = chessBoardScore;
+                                    evaluateMaxCoordinate[0] = i;
+                                    evaluateMaxCoordinate[1] = j;
+                                }
+                            }
+                        }
+                        else {
+                            evaluateScoreMost = chessBoardScore;
+                            evaluateMaxCoordinate[0] = i;
+                            evaluateMaxCoordinate[1] = j;
+                        }
+                    }
+                }
+            }
+            let chessBoardBest = JSON.parse(JSON.stringify(chessBoard));
+            chessBoardBest[evaluateMaxCoordinate[0]][evaluateMaxCoordinate[1]] = myDot;
+            chessBoardScoreMost = this.dfsChessBoard(depth - 1, chessBoardBest, evaluateScoreMost, null, !isCom);
+        }
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                if (chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+                    let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+                    chessBoardNext[i][j] = myDot;
+                    let chessBoardScore = this.evaluate(chessBoardNext, isCom);
+                    if (lastChessBoardScore == chessBoardScore) {
+                        continue;
+                    }
+                    if (depth != 1) {
+                        futureChessBoardScore = this.dfsChessBoard(depth - 1, chessBoardNext, chessBoardScore, chessBoardScoreMost, !isCom);
+                        //收到null，则跳过这个，若被剪枝，才返回null
+                        if (futureChessBoardScore == null) {
+                            continue;
+                        }
+                    }
+                    //剪枝
+                    if (otherChessBoardScoreMost != null) {
+                        if (!isCom) {
+                            if (depth == 1) {
+                                if (chessBoardScore < otherChessBoardScoreMost) {
+                                    return null;
+                                }
+                            }
+                            else {
+                                if (futureChessBoardScore < otherChessBoardScoreMost) {
+                                    return null;
+                                }
+                            }
+                        }
+                        else {
+                            if (futureChessBoardScore > otherChessBoardScoreMost) {
+                                return null;
+                            }
+                        }
+                    }
+                    if (chessBoardScoreMost == null) {
+                        if (depth == 1) {
+                            chessBoardScoreMost = chessBoardScore;
+                        }
+                        else {
+                            chessBoardScoreMost = futureChessBoardScore;
+                        }
+                    }
+                    else {
+                        if (depth == 1) {
+                            if (chessBoardScore < chessBoardScoreMost) {
+                                chessBoardScoreMost = chessBoardScore;
+                            }
+                        }
+                        else {
+                            if (isCom) {
+                                if (futureChessBoardScore > chessBoardScoreMost) {
+                                    chessBoardScoreMost = futureChessBoardScore;
+                                }
+                            }
+                            else {
+                                if (futureChessBoardScore < chessBoardScoreMost) {
+                                    chessBoardScoreMost = futureChessBoardScore;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return chessBoardScoreMost;
+    }
+    cleanWins(chessAI) {
+    }
+    /**
+     * 是否周围2格内是否有棋子
+     * @param x
+     * @param y
+     * @param chessBoard
+     * @returns {boolean}
+     */
+    hasNeighbor1(x, y, chessBoard) {
+        let startX = x - 2;
+        let endX = x + 2;
+        let startY = y - 2;
+        let endY = y + 2;
+        for (let i = startX; i <= endX; i++) {
+            if (i < 0 || i > 14) {
+                continue;
+            }
+            for (let j = startY; j <= endY; j++) {
+                if (j < 0 || j > 14) {
+                    continue;
+                }
+                if (i == x && j == y) {
+                    continue;
+                }
+                if (chessBoard[i][j] != 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * 判断周围2格内是否有棋子
+     * @param x
+     * @param y
+     * @param chessBoard
+     * @returns {boolean}
+     */
+    hasNeighbor2(x, y, chessBoard) {
+        //最近的一层先搜索
+        for (let i = x - 1; i <= x + 1; i++) {
+            if (i < 0 || i > 14) {
+                continue;
+            }
+            for (let j = y - 1; j <= y + 1; j++) {
+                if (j < 0 || j > 14) {
+                    continue;
+                }
+                if (i == x && j == y) {
+                    continue;
+                }
+                if (chessBoard[i][j] != 0) {
+                    return true;
+                }
+            }
+        }
+        //最近水平的两格处
+        for (let i = y - 2; i <= y + 2; i += 4) {
+            for (let j = x - 2; j <= x + 2; j++) {
+                if (i < 0 || i > 14 || j < 0 || j > 14) {
+                    continue;
+                }
+                if (chessBoard[j][i] != 0) {
+                    return true;
+                }
+            }
+        }
+        //最近垂直的两格处
+        for (let i = x - 2; i <= x + 2; i += 4) {
+            for (let j = y - 1; j <= y + 1; j++) {
+                if (i < 0 || i > 14 || j < 0 || j > 14) {
+                    continue;
+                }
+                if (chessBoard[i][j] != 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * 评估棋面得分, 局势评分也可以根据电脑所有子得分的相加-玩家所有子得分的相加
+     * @param chessBoard
+     * @param isManNext
+     * @returns {number}
+     */
+    evaluate(chessBoard, isManNext) {
+        let comMaxScore = 0;
+        let humMaxScore = 0;
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                if (chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+                    let comScore = this.chessScore(i, j, true, chessBoard);
+                    if (comScore > comMaxScore) {
+                        comMaxScore = comScore;
+                    }
+                    let humScore = this.chessScore(i, j, false, chessBoard);
+                    if (humScore > humMaxScore) {
+                        humMaxScore = humScore;
+                    }
+                }
+            }
+        }
+        if (isManNext) {
+            return comMaxScore * 12 - humMaxScore;
+        }
+        else {
+            return comMaxScore - humMaxScore * 12;
+        }
+    }
+    /**
+     * 是否游戏结束 0:未，1:玩家赢，2:电脑赢
+     * @param chessBoard
+     * @returns {number}
+     */
+    isGameOver(chessBoard) {
+        let count = 0;
+        // 纵向90°的五子判断
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 11; j++) {
+                count = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (chessBoard[i][j + k] == 0) {
+                        count = 0;
+                        break;
+                    }
+                    else {
+                        count += chessBoard[i][j + k];
+                    }
+                }
+                if (count == 5) {
+                    return 1;
+                }
+                else if (count == 10) {
+                    return 2;
+                }
+            }
+        }
+        // 横向0°的五子判断
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 11; j++) {
+                count = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (chessBoard[j + k][i] == 0) {
+                        count = 0;
+                        break;
+                    }
+                    else {
+                        count += chessBoard[j + k][i];
+                    }
+                }
+                if (count == 5) {
+                    return 1;
+                }
+                else if (count == 10) {
+                    return 2;
+                }
+            }
+        }
+        // 斜向135°的五子判断'\'方向
+        for (let i = 0; i < 11; i++) {
+            for (let j = 0; j < 11; j++) {
+                count = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (chessBoard[i + k][j + k] == 0) {
+                        count = 0;
+                        break;
+                    }
+                    else {
+                        count += chessBoard[i + k][j + k];
+                    }
+                }
+                if (count == 5) {
+                    return 1;
+                }
+                else if (count == 10) {
+                    return 2;
+                }
+            }
+        }
+        // 斜向45°的五子判断'/'方向
+        for (let i = 0; i < 11; i++) {
+            for (let j = 14; j > 3; j--) {
+                count = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (chessBoard[i + k][j - k] == 0) {
+                        count = 0;
+                        break;
+                    }
+                    else {
+                        count += chessBoard[i + k][j - k];
+                    }
+                }
+                if (count == 5) {
+                    return 1;
+                }
+                else if (count == 10) {
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    }
+    /**
+     * 计算在此下子的得分
+     * @param x
+     * @param y
+     * @param isCom
+     * @param chessBoard
+     * @returns {number}
+     */
+    chessScore(x, y, isCom, chessBoard) {
+        const myDot = isCom ? 2 : 1;
+        const againDot = isCom ? 1 : 2;
+        let count = 0;
+        let sum = 0;
+        //横向
+        for (let i = 0; i < 5; i++) {
+            count = 0;
+            for (let j = i - 4; j <= i; j++) {
+                if (x + j < 0 || x + j > 14) {
+                    continue;
+                }
+                if (chessBoard[x + j][y] == againDot) {
+                    count = 0;
+                    break;
+                }
+                else if (chessBoard[x + j][y] == myDot) {
+                    count++;
+                }
+            }
+            sum += this.getScore(count);
+        }
+        //纵向
+        for (let i = 0; i < 5; i++) {
+            count = 0;
+            for (let j = i - 4; j <= i; j++) {
+                if (y + j < 0 || y + j > 14) {
+                    continue;
+                }
+                if (chessBoard[x][y + j] == againDot) {
+                    count = 0;
+                    break;
+                }
+                else if (chessBoard[x][y + j] == myDot) {
+                    count++;
+                }
+            }
+            sum += this.getScore(count);
+        }
+        // '/'向
+        for (let i = 0; i < 5; i++) {
+            count = 0;
+            for (let j = i - 4; j <= i; j++) {
+                if (x + j < 0 || x + j > 14 || y + j < 0 || y + j > 14) {
+                    continue;
+                }
+                if (chessBoard[x + j][y + j] == againDot) {
+                    count = 0;
+                    break;
+                }
+                else if (chessBoard[x + j][y + j] == myDot) {
+                    count++;
+                }
+            }
+            sum += this.getScore(count);
+        }
+        // '\'向
+        for (let i = 0; i < 5; i++) {
+            count = 0;
+            for (let j = i - 4; j <= i; j++) {
+                if (x + j < 0 || x + j > 14 || y - j < 0 || y - j > 14) {
+                    continue;
+                }
+                if (chessBoard[x + j][y - j] == againDot) {
+                    count = 0;
+                    break;
+                }
+                else if (chessBoard[x + j][y - j] == myDot) {
+                    count++;
+                }
+            }
+            sum += this.getScore(count);
+        }
+        return sum;
+    }
+    /**
+     * 根据此赢法内的棋子数来返回分数
+     * @param count
+     */
+    getScore(count) {
+        switch (count) {
+            case 0: return 0;
+            case 1: return 1;
+            case 2: return 10;
+            case 3: return 100;
+            case 4: return 1000;
+            default: return 0;
+        }
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ChessAIImpl3;
+
+
+
+/***/ }),
+/* 80 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__ = __webpack_require__(10);
 
 var Coordinate = __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__["a" /* ChessBoardModule */].Coordinate;
 var Piece = __WEBPACK_IMPORTED_MODULE_0__ChessBoardModule__["a" /* ChessBoardModule */].Piece;
@@ -48624,7 +49138,7 @@ class PlayChess {
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -48652,7 +49166,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
