@@ -28,9 +28,40 @@ export class ChessAIImpl3 implements ChessAI{
     let perfectCoordinate = []; //0:x,1:y
     let futureScoreMost = null;
 
-    let lastChessBoardScore = this.evaluate(chessBoard);
+    let evaluateScoreMost = null;
+
+    let lastChessBoardScore = this.evaluate(chessBoard,false);
 
     //启发搜索
+    for (let i = 0; i < 15; i++){
+      for (let j = 0; j < 15; j++){
+        if(chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+          let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+          chessBoardNext[i][j] = 2;
+
+          let chessBoardScore = this.evaluate(chessBoardNext,true);
+          if (evaluateScoreMost != null){
+            if (chessBoardScore > evaluateScoreMost){
+              evaluateScoreMost = chessBoardScore;
+              perfectCoordinate[0] = i;
+              perfectCoordinate[1] = j;
+            }
+          }else {
+            evaluateScoreMost = chessBoardScore;
+            perfectCoordinate[0] = i;
+            perfectCoordinate[1] = j;
+          }
+
+        }
+      }
+    }
+
+    let chessBoardBest = JSON.parse(JSON.stringify(chessBoard));
+    chessBoardBest[perfectCoordinate[0]][perfectCoordinate[1]] = 2;
+
+    futureScoreMost = this.dfsChessBoard(1,chessBoardBest,evaluateScoreMost,null,false);
+
+    console.log("算出未来最佳值:"+futureScoreMost);
 
     for (let i = 0; i < 15; i++){
       for (let j = 0; j < 15; j++){
@@ -45,7 +76,7 @@ export class ChessAIImpl3 implements ChessAI{
           let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
           chessBoardNext[i][j] = 2;
 
-          let chessBoardScore = this.evaluate(chessBoardNext);
+          let chessBoardScore = this.evaluate(chessBoardNext,true);
 
           if (lastChessBoardScore == chessBoardScore){
               continue;
@@ -107,6 +138,48 @@ export class ChessAIImpl3 implements ChessAI{
     const myDot = isCom ? 2 : 1;
     let chessBoardScoreMost = null;
     let futureChessBoardScore = null;
+    let evaluateScoreMost = null;
+    let evaluateMaxCoordinate = [];
+
+    //启发搜索
+    if (depth != 1){
+      for (let i = 0; i < 15; i++){
+        for (let j = 0; j < 15; j++){
+          if(chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
+            let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
+            chessBoardNext[i][j] = myDot;
+
+            let chessBoardScore = this.evaluate(chessBoardNext, isCom);
+            if (evaluateScoreMost != null){
+              if (!isCom){
+                if (chessBoardScore < evaluateScoreMost){
+                  evaluateScoreMost = chessBoardScore;
+                  evaluateMaxCoordinate[0] = i;
+                  evaluateMaxCoordinate[1] = j;
+                }
+              }else {
+                if (chessBoardScore > evaluateScoreMost){
+                  evaluateScoreMost = chessBoardScore;
+                  evaluateMaxCoordinate[0] = i;
+                  evaluateMaxCoordinate[1] = j;
+                }
+              }
+            }else {
+              evaluateScoreMost = chessBoardScore;
+              evaluateMaxCoordinate[0] = i;
+              evaluateMaxCoordinate[1] = j;
+            }
+
+          }
+        }
+      }
+
+      let chessBoardBest = JSON.parse(JSON.stringify(chessBoard));
+      chessBoardBest[evaluateMaxCoordinate[0]][evaluateMaxCoordinate[1]] = myDot;
+
+      chessBoardScoreMost = this.dfsChessBoard(depth-1,chessBoardBest,evaluateScoreMost,null,!isCom);
+    }
+
 
     for (let i = 0; i < 15; i++){
       for (let j = 0; j < 15; j++){
@@ -114,7 +187,7 @@ export class ChessAIImpl3 implements ChessAI{
           let chessBoardNext = JSON.parse(JSON.stringify(chessBoard));
           chessBoardNext[i][j] = myDot;
 
-          let chessBoardScore = this.evaluate(chessBoardNext);
+          let chessBoardScore = this.evaluate(chessBoardNext, isCom);
           if (lastChessBoardScore == chessBoardScore){
             continue;
           }
@@ -287,9 +360,10 @@ export class ChessAIImpl3 implements ChessAI{
   /**
    * 评估棋面得分, 局势评分也可以根据电脑所有子得分的相加-玩家所有子得分的相加
    * @param chessBoard
+   * @param isManNext
    * @returns {number}
    */
-  evaluate(chessBoard: number[][]): number {
+  evaluate(chessBoard: number[][], isManNext: boolean): number {
 
     let comMaxScore = 0;
     let humMaxScore = 0;
@@ -297,13 +371,23 @@ export class ChessAIImpl3 implements ChessAI{
     for(let i = 0; i < 15; i++) {
       for(let j = 0; j < 15; j++) {
         if(chessBoard[i][j] == 0 && this.hasNeighbor2(i, j, chessBoard)) {
-          comMaxScore = Math.max(this.chessScore(i, j, true, chessBoard), comMaxScore);
-          humMaxScore = Math.max(this.chessScore(i, j, false, chessBoard), humMaxScore);
+          let comScore = this.chessScore(i, j, true, chessBoard);
+          if (comScore > comMaxScore){
+            comMaxScore = comScore;
+          }
+
+          let humScore = this.chessScore(i, j, false, chessBoard);
+          if (humScore > humMaxScore){
+            humMaxScore = humScore;
+          }
         }
       }
     }
-
-    return comMaxScore - humMaxScore;
+    if (isManNext){
+      return comMaxScore*12 - humMaxScore;
+    }else {
+      return comMaxScore - humMaxScore*12;
+    }
   }
 
   /**
@@ -492,7 +576,7 @@ export class ChessAIImpl3 implements ChessAI{
   getScore(count: number): number{
     switch(count) {
       case 0: return 0;
-      case 1: return 3;
+      case 1: return 1;
       case 2: return 10;
       case 3: return 100;
       case 4: return 1000;
