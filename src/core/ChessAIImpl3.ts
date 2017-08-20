@@ -114,8 +114,6 @@ export class ChessAIImpl3 implements ChessAI{
 
             }
           }
-
-
         }
       }
     }
@@ -244,8 +242,6 @@ export class ChessAIImpl3 implements ChessAI{
 
             }
           }
-
-
 
         }
       }
@@ -495,75 +491,88 @@ export class ChessAIImpl3 implements ChessAI{
 
     const myDot = isCom ? 2 : 1;
     const againDot = isCom ? 1 : 2;
-    let count = 0;
+    let count1 = 0;
+    let count2 = 0;
     let sum = 0;
 
     //横向
     for (let i = 0; i < 5; i++) {
-      count = 0;
+      count1 = 0;
+      count2 = 0;
       for (let j = i - 4; j <= i; j++) {
         if (x+j < 0 || x+j > 14){
           continue;
         }
         if (chessBoard[x+j][y] == againDot){
-          count = 0;
-          break;
+          count1 = 0;
+          count2++;
         }else if (chessBoard[x+j][y] == myDot){
-          count++;
+          count2 = 0;
+          count1++;
         }
       }
-      sum += this.getScore(count);
+      sum += this.getScore1(count1);
+      sum += this.getScore2(count2);
     }
 
     //纵向
     for (let i = 0; i < 5; i++) {
-      count = 0;
+      count1 = 0;
+      count2 = 0;
       for (let j = i - 4; j <= i; j++) {
         if (y+j < 0 || y+j > 14){
           continue;
         }
         if (chessBoard[x][y+j] == againDot){
-          count = 0;
-          break;
+          count1 = 0;
+          count2++;
         }else if (chessBoard[x][y+j] == myDot){
-          count++;
+          count2 = 0;
+          count1++;
         }
       }
-      sum += this.getScore(count);
+      sum += this.getScore1(count1);
+      sum += this.getScore2(count2);
     }
 
     // '/'向
     for (let i = 0; i < 5; i++) {
-      count = 0;
+      count1 = 0;
+      count2 = 0;
       for (let j = i - 4; j <= i; j++) {
         if (x+j < 0 || x+j > 14 || y+j < 0 || y+j > 14){
           continue;
         }
         if (chessBoard[x+j][y+j] == againDot){
-          count = 0;
-          break;
+          count1 = 0;
+          count2++;
         }else if (chessBoard[x+j][y+j] == myDot){
-          count++;
+          count2 = 0;
+          count1++;
         }
       }
-      sum += this.getScore(count);
+      sum += this.getScore1(count1);
+      sum += this.getScore2(count2);
     }
 
     // '\'向
     for (let i = 0; i < 5; i++) {
-      count = 0;
+      count1 = 0;
+      count2 = 0;
       for (let j = i - 4; j <= i; j++) {
         if (x+j < 0 || x+j > 14 || y-j < 0 || y-j > 14){
           continue;
         }
         if (chessBoard[x+j][y-j] == againDot){
-          count = 0;
-          break;
+          count1 = 0;
+          count2++;
         }else if (chessBoard[x+j][y-j] == myDot){
-          count++;
+          count2 = 0;
+          count1++;
         }
       }
-      sum += this.getScore(count);
+      sum += this.getScore1(count1);
+      sum += this.getScore2(count2);
     }
 
     return sum;
@@ -571,15 +580,32 @@ export class ChessAIImpl3 implements ChessAI{
 
   /**
    * 根据此赢法内的棋子数来返回分数
+   * 电脑版
    * @param count
    */
-  getScore(count: number): number{
+  getScore1(count: number): number{
     switch(count) {
       case 0: return 0;
       case 1: return 1;
       case 2: return 10;
       case 3: return 100;
       case 4: return 1000;
+      default:return 0;
+    }
+  }
+
+  /**
+   * 玩家版
+   * @param count
+   * @returns {number}
+   */
+  getScore2(count: number): number{
+    switch(count) {
+      case 0: return 0;
+      case 1: return 1;
+      case 2: return 5;
+      case 3: return 50;
+      case 4: return 500;
       default:return 0;
     }
   }
